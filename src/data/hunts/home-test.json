@@ -1,0 +1,105 @@
+{
+  "id": "home-test",
+  "title": "Home Rehearsal Trail",
+  "subtitle": "Everyday objects for testing camera verification indoors",
+  "venueName": "Your Home (Rehearsal Mode)",
+  "city": "Bangalore",
+  "welcomeCopy": "Six everyday clues designed so you can walk around your house right now, test dim lighting and tricky camera angles, and verify the five-gift finisher lock before visiting the venue.",
+  "maxWinners": 5,
+  "claimPrefix": "HOM",
+  "finaleTitle": "Rehearsal Complete",
+  "finaleStory": "Every clue along the rehearsal trail has been unlocked. When the courtyard version goes live on your wedding morning, this page will carry your personal story note and reveal whether the guest claimed one of the five physical goody bags.",
+  "prizeInstructions": "Show this stamped pass at the gift table to verify the claim code and mark a goody bag as redeemed in the host console.",
+  "stops": [
+    {
+      "id": "mirror",
+      "chapterTitle": "Stop One",
+      "locationLabel": "The Looking Glass",
+      "narrative": "Before stepping out to celebrate, every good story starts with a quiet glance at who is about to walk through the door.",
+      "riddle": "I greet you every morning without speaking a word, borrowing whatever expression you bring me. Step before me and capture both your reflection and my frame.",
+      "nudgeHint": "Find any bathroom, wardrobe, or hallway mirror and frame yourself (or your phone) clearly in the reflection.",
+      "successNote": "A clear reflection—your trail is officially underway.",
+      "verification": {
+        "targetDescription": "A physical mirror showing a reflection of a person, phone, or room.",
+        "acceptNotes": "Wall mirror, vanity mirror, wardrobe mirror, or hand mirror; dim bedroom/bathroom lighting and selfies in a mirror are totally fine.",
+        "rejectNotes": "Blank dark screen or phone selfie camera without an actual mirror frame/glass visible.",
+        "minConfidence": 0.65
+      }
+    },
+    {
+      "id": "vessel",
+      "chapterTitle": "Stop Two",
+      "locationLabel": "The Morning Vessel",
+      "narrative": "Bangalore mornings begin gently—with warm ceramic, steel, or glass cupped between two hands.",
+      "riddle": "I hold warmth without catching fire, carry a handle like a small ear, and sit patiently beside early-morning conversations. Show me where your first sip lives.",
+      "nudgeHint": "Look in the kitchen or on a desk for a coffee mug, teacup, kulhad, or everyday drinking cup.",
+      "successNote": "Nothing starts properly without a good cup nearby.",
+      "verification": {
+        "targetDescription": "A coffee mug, teacup, tumbler, or drinking vessel.",
+        "acceptNotes": "Ceramic mugs, glass cups, steel tumblers, empty or filled, on a table or held in hand.",
+        "rejectNotes": "Closed cupboard or water bottle unless clearly a drinking cup/mug.",
+        "minConfidence": 0.65
+      }
+    },
+    {
+      "id": "foliage",
+      "chapterTitle": "Stop Three",
+      "locationLabel": "Something Living",
+      "narrative": "Even indoors, a quiet patch of green reminds you of the open courtyard waiting ahead.",
+      "riddle": "I drink only water, grow slowly toward the nearest window, and dress the room in quiet green. Bring me into frame.",
+      "nudgeHint": "Snap any indoor houseplant, balcony pot, cut flowers, or garden leaves outside your window.",
+      "successNote": "Green leaves and steady roots—onward to the next clue.",
+      "verification": {
+        "targetDescription": "A real living plant, potted greenery, leaves, or fresh flowers.",
+        "acceptNotes": "Potted houseplants, balcony plants, succulents, fresh flowers in a vase, or garden foliage.",
+        "rejectNotes": "Printed leaf wallpaper or a blank wall.",
+        "minConfidence": 0.65
+      }
+    },
+    {
+      "id": "pages",
+      "chapterTitle": "Stop Four",
+      "locationLabel": "Bound Words",
+      "narrative": "Long before today's celebration, stories lived on paper margins and dog-eared pages.",
+      "riddle": "I hold hundreds of voices inside a quiet spine, opening like two wings whenever someone slows down to listen. Show me my cover or an open page.",
+      "nudgeHint": "Grab any novel, notebook, journal, or coffee-table book from a shelf or nightstand.",
+      "successNote": "A chapter captured—only two clues remain.",
+      "verification": {
+        "targetDescription": "A physical book, hardcover/paperback, notebook, or printed pages.",
+        "acceptNotes": "Closed book cover, open pages, or a stack of books on a table or shelf.",
+        "rejectNotes": "Phone screen or tablet displaying an ebook.",
+        "minConfidence": 0.65
+      }
+    },
+    {
+      "id": "warm-light",
+      "chapterTitle": "Stop Five",
+      "locationLabel": "Captured Warmth",
+      "narrative": "As dusk settles across a courtyard, small pools of amber light gather everyone closer.",
+      "riddle": "I stay silent all afternoon, yet the moment twilight arrives I spill warm amber across the corner of the room. Capture my glow.",
+      "nudgeHint": "Take a photo of a switched-on table lamp, wall sconce, fairy lights, lit candle, or warm ceiling fixture.",
+      "successNote": "The warm glow is unmistakable—one final clue awaits.",
+      "verification": {
+        "targetDescription": "A lit lamp, bulb, lantern, fairy lights, or candle emitting warm light.",
+        "acceptNotes": "Bedside lamp, standing lamp, decorative lantern, string lights, or candle flame, preferably lit.",
+        "rejectNotes": "Pitch-black frame or switched-off appliance with no light fixture clearly visible.",
+        "minConfidence": 0.62
+      }
+    },
+    {
+      "id": "threshold",
+      "chapterTitle": "Final Stop",
+      "locationLabel": "Ready to Step Out",
+      "narrative": "Everything is packed, the doors are open, and the courtyard awaits just beyond the threshold.",
+      "riddle": "We wait near the doorway in quiet pairs—or jingle in your palm—marking the exact moment you leave home behind for the celebration. Show us before you step out.",
+      "nudgeHint": "Photograph a pair of shoes/sandals by the door or a set of house/car keys.",
+      "successNote": "Threshold crossed. Unlocking your final story now.",
+      "verification": {
+        "targetDescription": "A pair of shoes/sandals/footwear or keys (house or vehicle keys).",
+        "acceptNotes": "Shoes on a mat/rack, footwear worn on feet, or a keyring/keys on a table or in hand.",
+        "rejectNotes": "Empty floor with no shoes or keys visible.",
+        "minConfidence": 0.65
+      }
+    }
+  ]
+}

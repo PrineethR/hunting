@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Next.js build outputs
+.next/
+out/
+build/
+coverage/
+
+# Environment secrets (NEVER commit .env.local or real keys)
+.env
+.env.*
+!.env.example
+
+# Local runtime storage & consulting bridge artifacts
+.data/
+.agent-bridge/
+
+# OS & TypeScript artifacts
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
