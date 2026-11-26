@@ -8,19 +8,21 @@
   --line: oklch(0.865 0.016 50);
   --line-strong: oklch(0.765 0.022 48);
 
-  /* Bangalore red-oxide terracotta */
   --accent: oklch(0.555 0.162 32);
   --accent-hover: oklch(0.495 0.168 32);
   --accent-tint: oklch(0.945 0.028 36);
   --accent-ink: oklch(0.985 0.006 40);
 
-  /* Semantic feedback */
   --success: oklch(0.465 0.118 148);
   --success-tint: oklch(0.948 0.024 148);
   --warn: oklch(0.545 0.135 66);
   --warn-tint: oklch(0.955 0.028 74);
   --danger: oklch(0.525 0.175 24);
   --danger-tint: oklch(0.955 0.025 24);
+
+  --font-display: "Newsreader", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
 
   --radius-sm: 6px;
   --radius-md: 12px;
@@ -39,7 +41,7 @@ body {
   padding: 0;
   background-color: var(--bg);
   color: var(--ink);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -62,7 +64,7 @@ select:focus-visible {
 }
 
 .mono-num {
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -77,7 +79,7 @@ select:focus-visible {
 }
 
 .shell-wide {
-  max-width: 960px;
+  max-width: 920px;
 }
 
 .topbar {
@@ -98,7 +100,7 @@ select:focus-visible {
 }
 
 .brand-title {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: 1.125rem;
   font-weight: 500;
   letter-spacing: -0.02em;
@@ -163,7 +165,7 @@ select:focus-visible {
 }
 
 .display-heading {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(2rem, 5.2vw, 3rem);
   font-weight: 400;
   line-height: 1.07;
@@ -173,7 +175,7 @@ select:focus-visible {
 }
 
 .section-heading {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.55rem, 4vw, 2.1rem);
   font-weight: 400;
   line-height: 1.12;
@@ -217,7 +219,7 @@ select:focus-visible {
 }
 
 .ledger-value {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-size: 1.05rem;
   font-weight: 500;
@@ -271,6 +273,7 @@ select:focus-visible {
   font-size: 0.95rem;
   cursor: pointer;
   border: 1px solid transparent;
+  text-decoration: none;
   transition:
     background-color 180ms var(--ease-out),
     border-color 180ms var(--ease-out),
@@ -364,7 +367,7 @@ select:focus-visible {
 }
 
 .riddle-verse {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display);
   font-size: clamp(1.22rem, 3.2vw, 1.45rem);
   line-height: 1.44;
   color: var(--ink);
@@ -372,6 +375,69 @@ select:focus-visible {
   padding-top: 14px;
   border-top: 1px solid var(--line);
   text-wrap: pretty;
+}
+
+.clue-image-frame {
+  margin: 14px 0 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.clue-image-frame img {
+  display: block;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+}
+
+.clue-image-caption {
+  padding: 8px 12px;
+  font-size: 0.84rem;
+  color: var(--ink-muted);
+  border-top: 1px solid var(--line);
+  background: var(--surface-elevated);
+}
+
+.action-twist-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in oklch, var(--accent) 32%, transparent);
+  background: var(--accent-tint);
+  font-size: 0.92rem;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+.nudge-row {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hint-box {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line-strong);
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.prop-reveal-box {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed color-mix(in oklch, var(--success) 45%, transparent);
+  background: var(--bg);
+  font-size: 0.89rem;
+  color: var(--ink);
 }
 
 .capture-stack {
@@ -459,67 +525,23 @@ select:focus-visible {
   text-wrap: pretty;
 }
 
-.hint-box {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed var(--line-strong);
-  font-size: 0.9rem;
-  color: var(--ink);
-}
-
-.clue-image-frame {
-  margin: 14px 0 4px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--surface);
-}
-
-.clue-image-frame img {
-  display: block;
-  width: 100%;
-  max-height: 240px;
-  object-fit: cover;
-}
-
-.clue-image-caption {
-  padding: 8px 12px;
-  font-size: 0.84rem;
-  color: var(--ink-muted);
-  border-top: 1px solid var(--line);
+.winner-pass {
   background: var(--surface-elevated);
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+  margin: 18px 0;
 }
 
-.action-twist-box {
-  margin-top: 14px;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid color-mix(in oklch, var(--accent) 32%, transparent);
-  background: var(--accent-tint);
-  font-size: 0.92rem;
-  color: var(--ink);
-  text-wrap: pretty;
-}
-
-.nudge-row {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+.winner-rank-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
-}
-
-.prop-reveal-box {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px dashed color-mix(in oklch, var(--success) 45%, transparent);
-  background: var(--bg);
-  font-size: 0.89rem;
-  color: var(--ink);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
 }
 
 .keepsake-panel {
@@ -560,97 +582,6 @@ select:focus-visible {
   text-overflow: ellipsis;
 }
 
-.winner-pass {
-  background: var(--surface-elevated);
-  border: 1.5px solid var(--accent);
-  border-radius: var(--radius-md);
-  padding: 24px 20px;
-  margin: 18px 0;
-}
-
-.winner-rank-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 16px;
-}
-
-.claim-code-box {
-  background: var(--surface);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-  margin: 16px 0;
-  text-align: center;
-}
-
-.claim-code-value {
-  font-family: var(--font-mono), monospace;
-  font-size: clamp(1.35rem, 5vw, 1.85rem);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-}
-
-.admin-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-}
-
-@media (min-width: 760px) {
-  .admin-grid {
-    grid-template-columns: 1.25fr 0.75fr;
-    align-items: start;
-  }
-}
-
-.roster-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.roster-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.roster-table th {
-  text-align: left;
-  font-weight: 600;
-  color: var(--ink-muted);
-  font-size: 0.8rem;
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--line-strong);
-}
-
-.roster-table td {
-  padding: 11px 8px;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
-}
-
-.qr-frame {
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 14px;
-  display: flex;
-  justify-content: center;
-  margin: 14px 0;
-}
-
-.qr-frame img {
-  width: 220px;
-  height: 220px;
-  display: block;
-}
-
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -675,6 +606,35 @@ select:focus-visible {
   color: var(--success);
 }
 
+.qr-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+@media (min-width: 760px) {
+  .qr-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: start;
+  }
+}
+
+.qr-frame {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  margin: 14px 0;
+}
+
+.qr-frame svg {
+  width: 240px;
+  height: 240px;
+  display: block;
+}
+
 .footer-note {
   margin-top: auto;
   padding-top: 28px;
@@ -684,6 +644,10 @@ select:focus-visible {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.hidden {
+  display: none !important;
 }
 
 @keyframes enterUp {

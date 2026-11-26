@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f9f5ee" />
+    <title>Angana Courtyard Trail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div class="brand-mark">
+          <span id="venue-brand" class="brand-title">Angana Courtyard Trail</span>
+        </div>
+        <div class="topbar-meta">
+          <button id="reset-run-btn" type="button" class="btn btn-ghost hidden">
+            Reset my run
+          </button>
+          <a href="./qr.html" class="quiet-link">QR Generator</a>
+        </div>
+      </header>
+
+      <div
+        id="pack-switcher"
+        class="pack-switcher"
+        role="group"
+        aria-label="Trail mode"
+      ></div>
+
+      <div id="global-alert" class="feedback-banner hidden" data-tone="error" role="alert">
+        <div class="feedback-title">Something needs attention</div>
+        <p id="global-alert-text" class="feedback-text"></p>
+      </div>
+
+      <section id="screen-loading" class="panel" aria-live="polite">
+        <p class="lead-copy" style="margin: 0">Opening trail notebook...</p>
+      </section>
+
+      <section id="screen-welcome" class="hidden">
+        <h1 id="welcome-title" class="display-heading"></h1>
+        <p id="welcome-copy" class="lead-copy"></p>
+
+        <div class="prize-ledger" aria-label="Hunt status">
+          <div class="ledger-cell">
+            <span class="ledger-label">Stops on trail</span>
+            <span id="ledger-stops" class="ledger-value"></span>
+          </div>
+          <div class="ledger-cell">
+            <span class="ledger-label">Goody bags at gift table</span>
+            <span id="ledger-gifts" class="ledger-value"></span>
+          </div>
+        </div>
+
+        <form id="start-form" class="panel">
+          <div id="key-setup-box" style="margin-bottom: 16px">
+            <label for="api-key-input" class="field-label">
+              Gemini API Key (saved only in this browser)
+            </label>
+            <input
+              id="api-key-input"
+              type="password"
+              class="text-input"
+              placeholder="Paste your restricted Generative Language API key"
+            />
+            <p style="margin: 6px 0 0; font-size: 0.82rem; color: var(--ink-muted);">
+              Guests scanning your QR code from <a href="./qr.html" class="quiet-link" style="padding: 0; text-decoration: underline;">QR Generator</a> skip this step automatically.
+            </p>
+          </div>
+
+          <div
+            id="key-saved-row"
+            class="hidden"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 8px;
+              margin-bottom: 14px;
+              padding-bottom: 12px;
+              border-bottom: 1px solid var(--line);
+            "
+          >
+            <span style="font-size: 0.84rem; color: var(--success); font-weight: 600">
+              Camera check ready
+            </span>
+            <button id="clear-key-btn" type="button" class="btn btn-ghost">
+              Change key
+            </button>
+          </div>
+
+          <label for="player-name-input" class="field-label">
+            Your name or pair name
+          </label>
+          <input
+            id="player-name-input"
+            type="text"
+            class="text-input"
+            placeholder="e.g., Aarav & Meera"
+            maxlength="48"
+            required
+          />
+          <div style="margin-top: 14px">
+            <button id="start-submit-btn" type="submit" class="btn btn-primary">
+              Begin the hunt
+            </button>
+          </div>
+          <p style="margin: 12px 0 0; font-size: 0.84rem; color: var(--ink-muted)">
+            Solve every clue without using a nudge to earn a No-Hint Sleuth
+            stamp—plus a downloadable keepsake strip at the end.
+          </p>
+        </form>
+      </section>
+
+      <section id="screen-active" class="hidden">
+        <div class="stop-header">
+          <span
+            id="stop-counter"
+            class="mono-num"
+            style="font-size: 0.84rem; color: var(--ink-muted)"
+          ></span>
+          <span id="gifts-badge" class="status-pill" data-tone="accent"></span>
+        </div>
+
+        <div class="progress-rail">
+          <div id="progress-fill" class="progress-fill" style="width: 8%"></div>
+        </div>
+
+        <article class="riddle-sheet">
+          <h1 id="stop-heading" class="section-heading"></h1>
+          <p id="stop-narrative" class="riddle-narrative"></p>
+
+          <figure id="clue-image-wrap" class="clue-image-frame hidden">
+            <img id="clue-image" src="" alt="" />
+            <figcaption id="clue-image-caption" class="clue-image-caption"></figcaption>
+          </figure>
+
+          <blockquote id="stop-riddle" class="riddle-verse"></blockquote>
+
+          <div id="action-twist-box" class="action-twist-box hidden">
+            <strong>Photo twist:</strong> <span id="action-twist-text"></span>
+          </div>
+
+          <div id="hint-box" class="hint-box hidden">
+            <strong>Field note:</strong> <span id="hint-text"></span>
+          </div>
+
+          <div id="nudge-row" class="nudge-row">
+            <span style="font-size: 0.83rem; color: var(--ink-muted)">
+              Stuck? Unlock a direct clue (costs your No-Hint Sleuth stamp).
+            </span>
+            <button id="nudge-btn" type="button" class="btn btn-ghost">
+              Use a nudge
+            </button>
+          </div>
+        </article>
+
+        <div id="capture-controls" class="capture-stack">
+          <input
+            id="camera-input"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            class="hidden-file-input"
+          />
+          <input
+            id="library-input"
+            type="file"
+            accept="image/*"
+            class="hidden-file-input"
+          />
+          <button id="take-photo-btn" type="button" class="btn btn-primary">
+            Take photo
+          </button>
+          <button id="library-photo-btn" type="button" class="btn btn-secondary">
+            Choose from photo library
+          </button>
+        </div>
+
+        <div id="preview-card" class="preview-card hidden">
+          <img id="preview-img" src="" alt="Selected clue attempt" class="preview-image" />
+          <div class="preview-footer">
+            <span id="preview-meta" class="mono-num"></span>
+            <button id="clear-photo-btn" type="button" class="btn btn-ghost">
+              Clear
+            </button>
+          </div>
+          <div style="padding: 0 14px 14px">
+            <button id="verify-photo-btn" type="button" class="btn btn-primary">
+              Submit photo for check
+            </button>
+          </div>
+        </div>
+
+        <div id="feedback-banner" class="feedback-banner hidden" role="status">
+          <div id="feedback-title" class="feedback-title"></div>
+          <p id="feedback-text" class="feedback-text"></p>
+        </div>
+
+        <div id="verified-banner" class="feedback-banner hidden" data-tone="success" role="status">
+          <div class="feedback-title">Clue verified</div>
+          <p id="verified-feedback" class="feedback-text"></p>
+          <p
+            id="verified-success-note"
+            class="feedback-text"
+            style="margin-top: 8px; color: var(--ink-muted); font-size: 0.9rem"
+          ></p>
+          <div id="prop-reveal-box" class="prop-reveal-box hidden">
+            <strong>Hidden lead:</strong> <span id="prop-reveal-text"></span>
+          </div>
+          <div style="margin-top: 14px">
+            <button id="next-stop-btn" type="button" class="btn btn-primary">
+              Continue
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-completed" class="hidden">
+        <h1 id="finale-title" class="display-heading"></h1>
+        <p id="finale-story" class="lead-copy"></p>
+
+        <div
+          id="final-feedback-banner"
+          class="feedback-banner hidden"
+          data-tone="success"
+          style="margin-bottom: 18px"
+        >
+          <div class="feedback-title">Final stop verified</div>
+          <p id="final-feedback-text" class="feedback-text"></p>
+        </div>
+
+        <div class="winner-pass">
+          <div class="winner-rank-row">
+            <div>
+              <div style="font-size: 0.84rem; color: var(--ink-muted); margin-bottom: 2px">
+                Trail finisher pass
+              </div>
+              <strong id="finisher-name" style="font-size: 1.15rem"></strong>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center">
+              <span id="sleuth-badge" class="status-pill hidden" data-tone="success">
+                No-Hint Sleuth
+              </span>
+              <span id="winner-badge" class="status-pill" data-tone="accent"></span>
+            </div>
+          </div>
+
+          <p id="prize-instructions" style="margin: 0; font-size: 0.95rem"></p>
+
+          <div class="prize-ledger" style="margin-top: 18px; margin-bottom: 0">
+            <div class="ledger-cell">
+              <span class="ledger-label">Elapsed time</span>
+              <span id="elapsed-time" class="ledger-value"></span>
+            </div>
+            <div class="ledger-cell">
+              <span class="ledger-label">Completed at</span>
+              <span id="completed-at" class="ledger-value"></span>
+            </div>
+          </div>
+        </div>
+
+        <section id="keepsake-panel" class="keepsake-panel hidden">
+          <h2 class="section-heading" style="font-size: 1.35rem">
+            Your Trail Keepsake Strip
+          </h2>
+          <p
+            id="keepsake-summary"
+            style="margin: 0 0 8px; font-size: 0.9rem; color: var(--ink-muted)"
+          ></p>
+          <div id="keepsake-grid" class="keepsake-grid"></div>
+          <button id="download-strip-btn" type="button" class="btn btn-secondary">
+            Download Keepsake Photo Strip
+          </button>
+        </section>
+      </section>
+
+      <footer class="footer-note">
+        <span id="footer-venue"></span>
+        <span id="footer-edition"></span>
+      </footer>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

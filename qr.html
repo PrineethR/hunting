@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f9f5ee" />
+    <title>QR Generator · Angana Courtyard Trail</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400..500;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell shell-wide">
+      <header class="topbar">
+        <div class="brand-mark">
+          <span class="brand-title">Wedding QR Code Studio</span>
+        </div>
+        <div class="topbar-meta">
+          <a href="./" class="quiet-link">Back to Trail</a>
+        </div>
+      </header>
+
+      <div class="qr-grid">
+        <section class="panel">
+          <h1 class="section-heading" style="font-size: 1.5rem">
+            Print-Ready Trail QR Code
+          </h1>
+          <p class="lead-copy" style="margin-bottom: 18px">
+            Embeds your domain-restricted Gemini API key inside the URL fragment
+            (<code class="mono-num">#k=...</code>) so guests start immediately
+            without typing anything—and your key never sits inside GitHub.
+          </p>
+
+          <div style="margin-bottom: 14px">
+            <label for="qr-base-url" class="field-label">Hosted Site URL</label>
+            <input
+              id="qr-base-url"
+              type="url"
+              class="text-input"
+              value="https://prineethr.com/hunting/"
+            />
+          </div>
+
+          <div style="margin-bottom: 14px">
+            <label for="qr-hunt-select" class="field-label">Trail Mode</label>
+            <select id="qr-hunt-select" class="text-input">
+              <option value="angana-courtyard">
+                Courtyard Trails at Angana (7 stops · Wedding Day)
+              </option>
+              <option value="home-test">
+                Home Rehearsal Trail (6 stops · Testing)
+              </option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 14px">
+            <label for="qr-api-key" class="field-label">
+              Restricted Gemini API Key
+            </label>
+            <input
+              id="qr-api-key"
+              type="password"
+              class="text-input"
+              placeholder="Paste your HTTP-restricted Generative Language API key"
+            />
+          </div>
+
+          <button id="generate-qr-btn" type="button" class="btn btn-primary">
+            Generate QR Code
+          </button>
+        </section>
+
+        <aside class="panel">
+          <h2 class="section-heading" style="font-size: 1.35rem">Preview</h2>
+          <div id="qr-frame" class="qr-frame">
+            <span style="font-size: 0.88rem; color: var(--ink-muted)">
+              Enter your key and click Generate QR Code
+            </span>
+          </div>
+          <p
+            id="qr-url-preview"
+            class="mono-num"
+            style="
+              font-size: 0.76rem;
+              color: var(--ink-muted);
+              word-break: break-all;
+              margin: 0 0 12px;
+            "
+          ></p>
+          <a
+            id="download-qr-btn"
+            href="#"
+            download="angana-trail-qr.svg"
+            class="btn btn-secondary hidden"
+          >
+            Download SVG for Print
+          </a>
+        </aside>
+      </div>
+    </main>
+
+    <script type="module">
+      import QRCode from "https://esm.sh/qrcode@1.5.4";
+
+      const baseInput = document.getElementById("qr-base-url");
+      const huntSelect = document.getElementById("qr-hunt-select");
+      const keyInput = document.getElementById("qr-api-key");
+      const genBtn = document.getElementById("generate-qr-btn");
+      const qrFrame = document.getElementById("qr-frame");
+      const urlPreview = document.getElementById("qr-url-preview");
+      const downloadBtn = document.getElementById("download-qr-btn");
+
+      const savedKey = window.localStorage.getItem("angana_gemini_key_v1") || "";
+      if (savedKey) keyInput.value = savedKey;
+
+      async function renderQr() {
+        const base = baseInput.value.trim().replace(/\/+$/, "") + "/";
+        const huntId = huntSelect.value;
+        const key = keyInput.value.trim();
+
+        const targetUrl = key
+          ? `${base}?hunt=${encodeURIComponent(huntId)}#k=${encodeURIComponent(key)}`
+          : `${base}?hunt=${encodeURIComponent(huntId)}`;
+
+        const svgString = await QRCode.toString(targetUrl, {
+          type: "svg",
+          margin: 1,
+          width: 320,
+          color: { dark: "#261d17", light: "#fbf8f3" }
+        });
+
+        qrFrame.innerHTML = svgString;
+        urlPreview.textContent = key
+          ? `${base}?hunt=${huntId}#k=••••••••`
+          : targetUrl;
+
+        const blob = new Blob([svgString], { type: "image/svg+xml" });
+        downloadBtn.href = URL.createObjectURL(blob);
+        downloadBtn.download = `${huntId}-qr.svg`;
+        downloadBtn.classList.remove("hidden");
+      }
+
+      genBtn.addEventListener("click", () => {
+        void renderQr();
+      });
+
+      void renderQr();
+    </script>
+  </body>
+</html>

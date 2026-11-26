@@ -1,20 +1,55 @@
-export interface KeepsakeShot {
-  stopId: string;
-  chapterTitle: string;
-  locationLabel: string;
-  dataUrl: string;
+export async function compressImageForUpload(
+  file,
+  maxDimension = 1024,
+  quality = 0.82
+) {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error("Could not read the selected image."));
+      el.src = objectUrl;
+    });
+
+    const scale = Math.min(
+      1,
+      maxDimension / Math.max(img.naturalWidth || 1, img.naturalHeight || 1)
+    );
+    const width = Math.max(1, Math.round(img.naturalWidth * scale));
+    const height = Math.max(1, Math.round(img.naturalHeight * scale));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Browser canvas context is unavailable.");
+    ctx.drawImage(img, 0, 0, width, height);
+
+    const dataUrl = canvas.toDataURL("image/jpeg", quality);
+    const base64 = dataUrl.split(",")[1] || "";
+    const byteLength = Math.floor((base64.length * 3) / 4);
+
+    return {
+      base64,
+      mimeType: "image/jpeg",
+      previewUrl: dataUrl,
+      byteLength,
+      width,
+      height
+    };
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
 }
 
-/**
- * Downscales a verified preview image to a compact thumbnail so 6-7 shots fit
- * comfortably inside browser localStorage.
- */
 export async function createThumbnailDataUrl(
-  sourceDataUrl: string,
+  sourceDataUrl,
   maxDimension = 360,
   quality = 0.74
-): Promise<string> {
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+) {
+  const img = await new Promise((resolve, reject) => {
     const el = new Image();
     el.onload = () => resolve(el);
     el.onerror = () => reject(new Error("Could not load verified photo."));
@@ -38,7 +73,7 @@ export async function createThumbnailDataUrl(
   return canvas.toDataURL("image/jpeg", quality);
 }
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+function loadImage(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
@@ -47,14 +82,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function drawCoverImage(
-  ctx: CanvasRenderingContext2D,
-  img: HTMLImageElement,
-  dx: number,
-  dy: number,
-  dw: number,
-  dh: number
-) {
+function drawCoverImage(ctx, img, dx, dy, dw, dh) {
   const srcRatio = img.naturalWidth / Math.max(1, img.naturalHeight);
   const dstRatio = dw / dh;
   let sx = 0;
@@ -73,18 +101,7 @@ function drawCoverImage(
   ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
 }
 
-/**
- * Composes an editorial 2-column warm-paper keepsake photo strip PNG in the browser.
- */
-export async function renderKeepsakeStripPng(params: {
-  title: string;
-  venueName: string;
-  city: string;
-  playerName: string;
-  rank: number;
-  pureSleuth?: boolean;
-  shots: KeepsakeShot[];
-}): Promise<string> {
+export async function renderKeepsakeStripPng(params) {
   const width = 900;
   const padX = 48;
   const headerH = 164;
@@ -104,16 +121,13 @@ export async function renderKeepsakeStripPng(params: {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas context unavailable");
 
-  // Warm cotton paper ground
   ctx.fillStyle = "#faf6ef";
   ctx.fillRect(0, 0, width, height);
 
-  // Subtle architectural outer hairline
   ctx.strokeStyle = "#ddd3c3";
   ctx.lineWidth = 2;
   ctx.strokeRect(20, 20, width - 40, height - 40);
 
-  // Header
   ctx.fillStyle = "#8a5a44";
   ctx.font = "500 16px ui-monospace, SFMono-Regular, Menlo, monospace";
   ctx.fillText(
@@ -128,7 +142,7 @@ export async function renderKeepsakeStripPng(params: {
 
   const badgeParts = [
     params.playerName,
-    `Finisher #${params.rank}`,
+    "Trail Finisher",
     params.pureSleuth ? "No-Hint Sleuth" : null
   ]
     .filter(Boolean)
@@ -137,7 +151,6 @@ export async function renderKeepsakeStripPng(params: {
   ctx.font = "500 18px -apple-system, BlinkMacSystemFont, sans-serif";
   ctx.fillText(badgeParts, padX, 140);
 
-  // Divider
   ctx.strokeStyle = "#ddd3c3";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
@@ -145,7 +158,6 @@ export async function renderKeepsakeStripPng(params: {
   ctx.lineTo(width - padX, 154);
   ctx.stroke();
 
-  // Render shots
   for (let i = 0; i < params.shots.length; i += 1) {
     const shot = params.shots[i];
     const col = i % cols;
@@ -176,7 +188,6 @@ export async function renderKeepsakeStripPng(params: {
     ctx.fillText(shot.locationLabel, x + 12, y + imgH + 40);
   }
 
-  // Footer
   ctx.fillStyle = "#7a6c5e";
   ctx.font = "400 14px ui-monospace, SFMono-Regular, Menlo, monospace";
   ctx.fillText(
