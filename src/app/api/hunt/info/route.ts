@@ -25,6 +25,7 @@ export async function GET(request: Request) {
     welcomeCopy: hunt.welcomeCopy,
     totalStops: hunt.stops.length,
     maxWinners: hunt.maxWinners,
+    maxNudges: hunt.maxNudges,
     prizesRemaining: snapshot.prizesRemaining,
     finishersCount: snapshot.finishers.length,
     allowSwitch,

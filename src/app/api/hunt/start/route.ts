@@ -51,6 +51,8 @@ export async function POST(request: Request) {
       huntId: hunt.id,
       currentStopIndex: 0,
       completedStopIds: [],
+      nudgesUsed: 0,
+      unlockedHintStopIds: [],
       startedAt
     });
 
@@ -63,6 +65,8 @@ export async function POST(request: Request) {
       startedAt,
       progressToken,
       currentStop: firstStop,
+      nudgesUsed: 0,
+      nudgesRemaining: hunt.maxNudges,
       prizesRemaining: snapshot.prizesRemaining,
       maxWinners: hunt.maxWinners
     });

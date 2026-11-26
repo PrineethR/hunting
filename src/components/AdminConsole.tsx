@@ -309,6 +309,17 @@ export function AdminConsole() {
                           <td className="mono-num">#{f.rank}</td>
                           <td>
                             <strong>{f.playerName}</strong>
+                            {f.pureSleuth ? (
+                              <div
+                                style={{
+                                  fontSize: "0.75rem",
+                                  color: "var(--success)",
+                                  marginTop: 2
+                                }}
+                              >
+                                No-Hint Sleuth
+                              </div>
+                            ) : null}
                           </td>
                           <td className="mono-num">
                             {f.claimCode ? (

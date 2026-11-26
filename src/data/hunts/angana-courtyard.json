@@ -4,17 +4,20 @@
   "subtitle": "A wedding story woven through stone, timber, and open sky",
   "venueName": "Angana The Courtyard",
   "city": "Bangalore",
-  "welcomeCopy": "Seven quiet corners across Angana The Courtyard hold pieces of our story. Follow each riddle with your camera—the first five guests or pairs to unlock every chapter may claim a keepsake goody bag at the welcome desk.",
+  "welcomeCopy": "Seven quiet corners across Angana The Courtyard hold pieces of our story—mixing riddles, visual clues, and playful photo twists. The first five guests or pairs to finish claim a keepsake goody bag, and everyone unlocks a downloadable trail photo strip.",
+  "hostPersona": "You are a witty, affectionate Bangalore wedding chronicler guiding guests through Angana The Courtyard. Notice festive outfits, courtyard light, and shared smiles in the photo; celebrate matches warmly and drop playful, spoiler-free nudges when someone is close.",
+  "maxNudges": 2,
   "maxWinners": 5,
   "claimPrefix": "ANG",
   "finaleTitle": "Under the Courtyard Sky",
-  "finaleStory": "You have walked the length of Angana—past warm red-oxide stone, quiet water, timber columns, and open Bangalore sky. Thank you for celebrating this chapter with us and seeing this courtyard through unhurried eyes.",
+  "finaleStory": "You have walked the length of Angana—past warm red-oxide stone, quiet water, carved timber columns, and open Bangalore sky. Thank you for celebrating this chapter with us and seeing this courtyard through unhurried eyes.",
   "prizeInstructions": "If your pass carries one of the first five winner numbers, bring this screen and claim code to the gift table near the entrance archway.",
   "stops": [
     {
       "id": "courtyard-welcome",
       "chapterTitle": "Chapter I",
       "locationLabel": "The First Threshold",
+      "challengeType": "riddle",
       "narrative": "Every gathering at Angana begins where the city noise fades behind stone walls and welcomes you inside.",
       "riddle": "Here is where names are greeted and journeys begin beneath an open threshold. Find the welcome board, floral archway, or carved entrance gate that marks our arrival.",
       "nudgeHint": "Head back toward the main courtyard entrance—any welcome sign, floral arch, or entrance doorway counts.",
@@ -29,22 +32,29 @@
       "id": "courtyard-mirror",
       "chapterTitle": "Chapter II",
       "locationLabel": "Where You Meet Yourself",
+      "challengeType": "action-combo",
       "narrative": "Festive silks, unhurried smiles, and a quiet pause before the music draws everyone to the lawn.",
       "riddle": "I wear no expression of my own, yet today I frame every smile, silk fold, and celebratory glance passing by. Stand before me and capture your reflection.",
-      "nudgeHint": "Look for the decorative mirror setup or welcome mirror in the courtyard and take a photo showing both the mirror and yourself.",
-      "successNote": "Looking celebratory already—the next chapter lies deeper in the courtyard.",
+      "actionPrompt": "Hold up 2 fingers in your reflection (for the two of us celebrating today) and keep the mirror frame in view.",
+      "nudgeHint": "Find the decorative welcome mirror in the courtyard, catch yourself in the reflection, and hold up 2 fingers.",
+      "successNote": "Sharp outfit, clear reflection, and two fingers spotted.",
+      "propRevealNote": "Look closely at the bottom-right corner of the mirror you just stood before—follow the carved wood pattern sketched there toward the verandah.",
       "verification": {
-        "targetDescription": "A mirror (decorative, welcome, or wall mirror) showing a reflection of the guest or courtyard.",
-        "acceptNotes": "Mirror selfies, angled mirror shots, welcome mirrors with lettering, even in warm evening lighting.",
-        "minConfidence": 0.63
+        "targetDescription": "A mirror (decorative, welcome, or wall mirror) showing a reflection of the guest holding up 2 fingers / peace sign.",
+        "acceptNotes": "Mirror selfies, angled mirror shots, welcome mirrors with lettering where the guest is reflected with 2 fingers raised, even in warm evening lighting.",
+        "rejectNotes": "Mirror with no visible guest/reflection or clearly no raised fingers when requested.",
+        "minConfidence": 0.62
       }
     },
     {
       "id": "terracotta-pillar",
       "chapterTitle": "Chapter III",
       "locationLabel": "Timber & Red Earth",
+      "challengeType": "visual-crop",
       "narrative": "Angana is built from materials that remember old Bangalore verandahs—weathered teak and sun-baked earth.",
-      "riddle": "I carry the veranda roof without ever tiring, dressed in carved timber and warm red earth. Frame one of my pillars standing sentinel beside the courtyard.",
+      "riddle": "Match this close-up craft detail along the courtyard walkway, then step back and photograph one full pillar standing sentinel.",
+      "clueImage": "/clues/angana-timber-motif.svg",
+      "clueImageCaption": "Visual clue: spot carved timber set against red-oxide walls along the verandah.",
       "nudgeHint": "Look along the covered verandah walkway for a wooden column, stone pillar, or terracotta/red-oxide wall arch.",
       "successNote": "Warm timber and red earth—a signature of this courtyard.",
       "verification": {
@@ -57,6 +67,7 @@
       "id": "water-urli",
       "chapterTitle": "Chapter IV",
       "locationLabel": "Still Water & Petals",
+      "challengeType": "riddle",
       "narrative": "In the hush between laughter and music, water holds floating marigolds and jasmine like a quiet mirror.",
       "riddle": "No river flows through me, yet petals drift across my surface beneath the sky. Find where water rests in brass or stone.",
       "nudgeHint": "Look around the central courtyard steps or pathways for a brass urli bowl with floating flowers, a fountain, or a lotus pond.",
@@ -71,13 +82,15 @@
       "id": "courtyard-canopy",
       "chapterTitle": "Chapter V",
       "locationLabel": "Above the Lawn",
+      "challengeType": "composition",
       "narrative": "Look up from the stone path: decades-old branches weave shade by afternoon and frame twilight stars at dusk.",
       "riddle": "My roots stay hidden below the stone, while my leaves stretch across the sky like a green umbrella over the courtyard. Tilt your lens upward.",
+      "actionPrompt": "Reach one hand up toward the branches in frame—or capture two courtyard trees framing the open sky.",
       "nudgeHint": "Stand under any courtyard tree or frangipani/bougainvillea canopy and shoot upward through the branches and sky.",
       "successNote": "Open branches and Bangalore sky—two chapters left.",
       "verification": {
-        "targetDescription": "Tree canopy, flowering branches, courtyard trees, or lush overhanging foliage seen outdoors.",
-        "acceptNotes": "Upward shots of tree branches against the sky, flowering trees, or sunlit/lit courtyard trees.",
+        "targetDescription": "Tree canopy, flowering branches, courtyard trees, or lush overhanging foliage seen outdoors against the sky.",
+        "acceptNotes": "Upward shots of tree branches against the sky, flowering trees, or sunlit/lit courtyard trees (with or without a reaching hand).",
         "minConfidence": 0.62
       }
     },
@@ -85,6 +98,7 @@
       "id": "brass-flame",
       "chapterTitle": "Chapter VI",
       "locationLabel": "Evening Brass",
+      "challengeType": "riddle",
       "narrative": "As light softens across the grass, small flames and warm lanterns turn the courtyard golden.",
       "riddle": "Polished in brass and waking at dusk, I hold a steady golden spark against the evening breeze. Capture my light.",
       "nudgeHint": "Search near the mandap, courtyard steps, or verandah for a traditional brass lamp (deepam/diya), hanging lantern, or warm string light.",
@@ -99,14 +113,16 @@
       "id": "celebration-toast",
       "chapterTitle": "Final Chapter",
       "locationLabel": "A Toast to the Evening",
+      "challengeType": "social",
       "narrative": "Every trail leads back to good company, warm cups, and laughter shared across the lawn.",
-      "riddle": "Cold or steaming, sweet or spiced, raise whatever glass or cup is keeping you company in this celebration—and toast the final chapter.",
-      "nudgeHint": "Snap a photo of a drink, filter coffee cup, chai glass, mocktail, or dessert plate at the venue.",
-      "successNote": "Cheers to you—revealing your final courtyard keepsake.",
+      "riddle": "Cold or steaming, sweet or spiced—raise a glass or coffee cup right here in the courtyard to toast the final chapter.",
+      "actionPrompt": "Clink two cups or glasses together in the photo (find a fellow guest nearby if you're playing solo!).",
+      "nudgeHint": "Snap a photo of two drinks, filter coffee cups, chai glasses, or mocktails clinking together in celebration.",
+      "successNote": "Cheers to you—unlocking your final courtyard keepsake and photo strip.",
       "verification": {
-        "targetDescription": "A beverage glass, coffee/chai cup, drink, cocktail/mocktail, or celebratory plate/cup held or on a table.",
-        "acceptNotes": "Any drink glass, filter coffee tumbler, teacup, juice, mocktail, or dessert plate in the venue.",
-        "minConfidence": 0.63
+        "targetDescription": "Two (or at least one) beverage glasses, coffee/chai cups, or celebratory drinks toasted/held up together.",
+        "acceptNotes": "Two glasses/cups clinking together, filter coffee tumblers, teacups, or celebratory drinks at the venue (allow single glass too if guest is solo on later attempts).",
+        "minConfidence": 0.62
       }
     }
   ]

@@ -30,9 +30,13 @@ export function buildGeminiVerifyPrompt(params: {
   const { hunt, stop, attemptNumber, hasReferenceImages } = params;
 
   return [
-    `You are the warm, attentive host of a celebratory wedding scavenger hunt at "${hunt.venueName}" in ${hunt.city}.`,
-    `A guest is on "${stop.chapterTitle}: ${stop.locationLabel}".`,
-    `The riddle they were given is: "${stop.riddle}"`,
+    hunt.hostPersona,
+    `Venue: "${hunt.venueName}" in ${hunt.city}.`,
+    `The guest is currently on "${stop.chapterTitle}: ${stop.locationLabel}".`,
+    `Riddle shown to guest: "${stop.riddle}"`,
+    stop.actionPrompt
+      ? `Extra Photo Twist required in frame: "${stop.actionPrompt}"`
+      : null,
     ``,
     `TARGET TO VERIFY:`,
     `- Primary target: ${stop.verification.targetDescription}`,
@@ -46,10 +50,13 @@ export function buildGeminiVerifyPrompt(params: {
     ``,
     `JUDGING RULES:`,
     `1. Real wedding/home phone photos often have warm evening lighting, motion blur, or unusual angles—be generous when the target object or landmark is genuinely present.`,
-    `2. Do NOT pass pitch-black frames, unrelated objects, or obvious photos of another screen unless the target itself is genuinely present.`,
-    `3. Current guest attempt number on this stop: ${attemptNumber}.`,
-    `4. Keep "feedback" to 1-2 short, warm sentences:`,
-    `   - If matched: celebrate briefly with a specific detail you spotted in their photo.`,
+    stop.actionPrompt
+      ? `2. Check BOTH the target object/spot AND the requested Photo Twist ("${stop.actionPrompt}"). If they clearly found the right object/spot but forgot the action/gesture/composition, set matched=false and give them cheerful partial-credit praise ("Right spot! Just remember to...") without spoiling anything else.`
+      : `2. Confirm the target object or spot is clearly visible in their photo.`,
+    `3. Do NOT pass pitch-black frames, unrelated objects, or obvious photos of another screen unless the target itself is genuinely present.`,
+    `4. Current guest attempt number on this stop: ${attemptNumber}.${attemptNumber >= 3 ? " (Since this is attempt 3+, be extra forgiving on dim light or slight framing quirks.)" : ""}`,
+    `5. Keep "feedback" to 1-2 short, warm, witty sentences in character:`,
+    `   - If matched: celebrate briefly with one specific detail you spotted in their photo.`,
     `   - If NOT matched: playfully describe what you see in their photo and give a spoiler-free nudge without naming the exact answer.`
   ]
     .filter(Boolean)

@@ -38,8 +38,9 @@ Guests scan a QR code, follow 6–7 story clues one at a time, snap photos verif
 
 ## 2. Customizing for Angana The Courtyard (Venue Visit)
 
-1. Edit **`src/data/hunts/angana-courtyard.json`** to adjust your 7 story beats, riddles, hints, or `maxWinners` (defaults to `5`).
-2. *(Optional accuracy boost)* During your walkthrough at Angana The Courtyard, take 1–2 photos of unique landmarks (e.g., the welcome arch or carved verandah pillar), save them in **`src/data/references/`** (`.jpg` under ~1200px), and list their filenames in `verification.referenceImages`:
+1. Edit **`src/data/hunts/angana-courtyard.json`** to customize `hostPersona`, `maxNudges`, `maxWinners`, and each stop's riddle, optional `actionPrompt` (e.g., holding up fingers in the mirror or clinking two cups), `clueImage`, or post-solve `propRevealNote`.
+2. *(Optional visual-crop clues)* Drop close-up detail photos of unique courtyard textures into **`public/clues/`** and point a stop's `clueImage` to `/clues/your-photo.jpg`.
+3. *(Optional accuracy boost)* During your walkthrough at Angana The Courtyard, take 1–2 photos of unique landmarks (e.g., the welcome arch or carved verandah pillar), save them in **`src/data/references/`** (`.jpg` under ~1200px), and list their filenames in `verification.referenceImages`:
    ```json
    "verification": {
      "targetDescription": "The carved teak pillar beside the main courtyard verandah.",
@@ -48,7 +49,7 @@ Guests scan a QR code, follow 6–7 story clues one at a time, snap photos verif
      "minConfidence": 0.65
    }
    ```
-3. Before wedding day, switch `DEFAULT_HUNT_ID=angana-courtyard` and set `ALLOW_HUNT_SWITCH=false` so guests land straight on the wedding hunt without seeing the home test tab.
+4. Before wedding day, switch `DEFAULT_HUNT_ID=angana-courtyard` and set `ALLOW_HUNT_SWITCH=false` so guests land straight on the wedding hunt without seeing the home test tab.
 
 ---
 

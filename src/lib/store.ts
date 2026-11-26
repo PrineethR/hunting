@@ -27,6 +27,7 @@ export interface RecordFinisherInput {
   startedAt: string;
   finishedAt: string;
   maxWinners: number;
+  nudgesUsed?: number;
 }
 
 export interface HuntLeaderboardSnapshot {
@@ -382,6 +383,7 @@ export async function recordFinisher(
       "-00-",
       "-__RANK__-"
     );
+    const nudgesUsed = input.nudgesUsed ?? 0;
     const seedRecord = {
       sessionId: input.sessionId,
       playerName: input.playerName,
@@ -392,6 +394,8 @@ export async function recordFinisher(
       startedAt: input.startedAt,
       finishedAt: input.finishedAt,
       elapsedMs,
+      nudgesUsed,
+      pureSleuth: nudgesUsed === 0,
       redeemed: false,
       redeemedAt: null
     };
@@ -424,6 +428,7 @@ export async function recordFinisher(
 
     const rank = bucket.finishers.length + 1;
     const isPrizeWinner = rank <= input.maxWinners;
+    const nudgesUsed = input.nudgesUsed ?? 0;
     const record: FinisherRecord = {
       sessionId: input.sessionId,
       playerName: input.playerName,
@@ -436,6 +441,8 @@ export async function recordFinisher(
       startedAt: input.startedAt,
       finishedAt: input.finishedAt,
       elapsedMs,
+      nudgesUsed,
+      pureSleuth: nudgesUsed === 0,
       redeemed: false,
       redeemedAt: null
     };

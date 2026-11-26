@@ -152,14 +152,22 @@ function renderCoffeeMugPngBase64(): string {
   return png.toString("base64");
 }
 
-test("getPublicStop strips verification secrets and hints", () => {
+test("getPublicStop strips verification secrets, hints, and propRevealNote while keeping public twists", () => {
   const hunt = resolveHunt("home-test");
   const stop0 = getPublicStop(hunt, 0);
   assert.ok(stop0);
   assert.equal(stop0.id, "mirror");
+  assert.equal(stop0.challengeType, "action-combo");
+  assert.ok(stop0.actionPrompt && stop0.actionPrompt.length > 0);
   assert.equal("verification" in stop0, false);
   assert.equal("nudgeHint" in stop0, false);
   assert.equal("successNote" in stop0, false);
+  assert.equal("propRevealNote" in stop0, false);
+
+  const stop3 = getPublicStop(hunt, 3);
+  assert.ok(stop3);
+  assert.equal(stop3.challengeType, "visual-crop");
+  assert.equal(stop3.clueImage, "/clues/home-book-pages.svg");
 });
 
 test("HMAC progress tokens reject tampering", () => {
@@ -211,7 +219,8 @@ test("atomic first-5 winner lock handles 20 concurrent finishers cleanly", async
           claimPrefix: "HOM",
           startedAt,
           finishedAt: new Date().toISOString(),
-          maxWinners: 5
+          maxWinners: 5,
+          nudgesUsed: i % 2
         })
       )
     );
@@ -221,6 +230,13 @@ test("atomic first-5 winner lock handles 20 concurrent finishers cleanly", async
 
     assert.equal(winners.length, 5);
     assert.equal(nonWinners.length, 15);
+    assert.equal(
+      results.filter((r) => r.pureSleuth).length,
+      10
+    );
+    for (const r of results) {
+      assert.equal(r.pureSleuth, (r.nudgesUsed ?? 0) === 0);
+    }
 
     const ranks = new Set(results.map((r) => r.rank));
     assert.equal(ranks.size, 20);

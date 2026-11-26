@@ -12,6 +12,11 @@ import {
   compressImageForUpload,
   type CompressedImageResult
 } from "@/lib/image-client";
+import {
+  createThumbnailDataUrl,
+  renderKeepsakeStripPng,
+  type KeepsakeShot
+} from "@/lib/keepsake-strip";
 import type {
   FinisherRecord,
   PublicHuntInfo,
@@ -28,6 +33,7 @@ type ScreenState = "loading" | "welcome" | "active" | "completed";
 interface VerifySuccessHold {
   feedback: string;
   successNote: string;
+  propRevealNote?: string | null;
   nextStop: PublicHuntStop;
   nextToken: string;
 }
@@ -38,12 +44,39 @@ interface CompletedState {
   finaleStory: string;
   prizeInstructions: string;
   lastFeedback?: string;
+  propRevealNote?: string | null;
 }
 
 const STORAGE_PREFIX = "angana_hunt_session_v1:";
+const PHOTOS_STORAGE_PREFIX = "angana_hunt_photos_v1:";
 
 function storageKey(huntId: string): string {
   return `${STORAGE_PREFIX}${huntId}`;
+}
+
+function photosStorageKey(huntId: string): string {
+  return `${PHOTOS_STORAGE_PREFIX}${huntId}`;
+}
+
+function loadStoredShots(huntId: string): KeepsakeShot[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(photosStorageKey(huntId));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as KeepsakeShot[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveStoredShots(huntId: string, shots: KeepsakeShot[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(photosStorageKey(huntId), JSON.stringify(shots));
+  } catch {
+    // Ignore storage quota issues cleanly
+  }
 }
 
 function formatDuration(ms: number): string {
@@ -77,6 +110,7 @@ export function ScavengerHuntApp() {
 
   const [photo, setPhoto] = useState<CompressedImageResult | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
+  const [nudgesRemaining, setNudgesRemaining] = useState(2);
   const [unlockedHint, setUnlockedHint] = useState<string | null>(null);
   const [feedbackBanner, setFeedbackBanner] = useState<{
     tone: "warn" | "error";
@@ -88,6 +122,8 @@ export function ScavengerHuntApp() {
   const [completedState, setCompletedState] = useState<CompletedState | null>(
     null
   );
+  const [keepsakeShots, setKeepsakeShots] = useState<KeepsakeShot[]>([]);
+  const [stripBusy, setStripBusy] = useState(false);
 
   const [busyMessage, setBusyMessage] = useState<string | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -110,6 +146,7 @@ export function ScavengerHuntApp() {
       const info = (await infoRes.json()) as PublicHuntInfo;
       setHuntInfo(info);
       setSelectedHuntId(info.id);
+      setNudgesRemaining(info.maxNudges ?? 2);
 
       // Reset transient per-stop UI
       setPhoto(null);
@@ -118,8 +155,8 @@ export function ScavengerHuntApp() {
       setUnlockedHint(null);
       setAttemptCount(0);
       setCompletedState(null);
+      setKeepsakeShots(loadStoredShots(info.id));
 
-      // Check localStorage for saved session on this hunt
       const rawSaved =
         typeof window !== "undefined"
           ? window.localStorage.getItem(storageKey(info.id))
@@ -158,6 +195,9 @@ export function ScavengerHuntApp() {
 
               setCurrentStop(resumed.currentStop);
               setAttemptCount(resumed.attemptNumber ?? 0);
+              setNudgesRemaining(
+                resumed.nudgesRemaining ?? info.maxNudges ?? 2
+              );
               setUnlockedHint(resumed.unlockedHint ?? null);
               setScreen("active");
               return;
@@ -167,6 +207,8 @@ export function ScavengerHuntApp() {
           // Invalid local state; clear and show welcome screen
         }
         window.localStorage.removeItem(storageKey(info.id));
+        window.localStorage.removeItem(photosStorageKey(info.id));
+        setKeepsakeShots([]);
       }
 
       setProgressToken(null);
@@ -218,12 +260,15 @@ export function ScavengerHuntApp() {
         huntId: data.huntId
       };
       window.localStorage.setItem(storageKey(data.huntId), JSON.stringify(saved));
+      window.localStorage.removeItem(photosStorageKey(data.huntId));
 
       setProgressToken(data.progressToken);
       setActivePlayerName(data.playerName);
       setCurrentStop(data.currentStop);
       setPhoto(null);
+      setKeepsakeShots([]);
       setAttemptCount(0);
+      setNudgesRemaining(data.nudgesRemaining ?? huntInfo.maxNudges ?? 2);
       setUnlockedHint(null);
       setFeedbackBanner(null);
       setVerifiedHold(null);
@@ -258,6 +303,49 @@ export function ScavengerHuntApp() {
           ? err.message
           : "Could not read that image. Please try another shot."
       );
+    } finally {
+      setBusyMessage(null);
+    }
+  };
+
+  const handleUseNudge = async () => {
+    if (!progressToken || !currentStop || !huntInfo || unlockedHint) return;
+    setBusyMessage("Opening field note...");
+    setGlobalError(null);
+
+    try {
+      const res = await fetch("/api/hunt/nudge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          progressToken,
+          stopId: currentStop.id
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedbackBanner({
+          tone: "warn",
+          text: data.error || "No nudges remaining for this trail."
+        });
+        return;
+      }
+
+      window.localStorage.setItem(
+        storageKey(huntInfo.id),
+        JSON.stringify({
+          progressToken: data.progressToken,
+          huntId: huntInfo.id
+        } satisfies StoredProgress)
+      );
+      setProgressToken(data.progressToken);
+      setUnlockedHint(data.hint);
+      setNudgesRemaining(data.nudgesRemaining);
+    } catch {
+      setFeedbackBanner({
+        tone: "error",
+        text: "Could not reach server for a nudge right now."
+      });
     } finally {
       setBusyMessage(null);
     }
@@ -309,7 +397,24 @@ export function ScavengerHuntApp() {
         return;
       }
 
-      // Persist updated token immediately so refreshing keeps their advancement
+      // Save compressed thumbnail locally for the end-of-trail Keepsake Strip
+      try {
+        const thumbUrl = await createThumbnailDataUrl(photo.previewUrl);
+        const nextShots = [
+          ...keepsakeShots.filter((s) => s.stopId !== currentStop.id),
+          {
+            stopId: currentStop.id,
+            chapterTitle: currentStop.chapterTitle,
+            locationLabel: currentStop.locationLabel,
+            dataUrl: thumbUrl
+          }
+        ];
+        setKeepsakeShots(nextShots);
+        saveStoredShots(huntInfo.id, nextShots);
+      } catch {
+        // Non-blocking if thumbnail conversion fails
+      }
+
       window.localStorage.setItem(
         storageKey(huntInfo.id),
         JSON.stringify({
@@ -325,7 +430,8 @@ export function ScavengerHuntApp() {
           finaleTitle: data.finaleTitle,
           finaleStory: data.finaleStory,
           prizeInstructions: data.prizeInstructions,
-          lastFeedback: data.feedback
+          lastFeedback: data.feedback,
+          propRevealNote: data.propRevealNote
         });
         setScreen("completed");
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -335,6 +441,7 @@ export function ScavengerHuntApp() {
       setVerifiedHold({
         feedback: data.feedback,
         successNote: data.successNote,
+        propRevealNote: data.propRevealNote,
         nextStop: data.nextStop,
         nextToken: data.progressToken
       });
@@ -360,16 +467,43 @@ export function ScavengerHuntApp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleDownloadKeepsakeStrip = async () => {
+    if (!huntInfo || !completedState || keepsakeShots.length === 0) return;
+    setStripBusy(true);
+    try {
+      const pngUrl = await renderKeepsakeStripPng({
+        title: huntInfo.title,
+        venueName: huntInfo.venueName,
+        city: huntInfo.city,
+        playerName: completedState.finisher.playerName,
+        rank: completedState.finisher.rank,
+        pureSleuth: completedState.finisher.pureSleuth,
+        shots: keepsakeShots
+      });
+      const link = document.createElement("a");
+      link.href = pngUrl;
+      link.download = `${huntInfo.id}-keepsake.png`;
+      link.click();
+    } catch {
+      setGlobalError("Could not generate keepsake strip image.");
+    } finally {
+      setStripBusy(false);
+    }
+  };
+
   const handleRestartLocal = () => {
     if (!huntInfo) return;
     window.localStorage.removeItem(storageKey(huntInfo.id));
+    window.localStorage.removeItem(photosStorageKey(huntInfo.id));
     setProgressToken(null);
     setCurrentStop(null);
     setPhoto(null);
+    setKeepsakeShots([]);
     setVerifiedHold(null);
     setFeedbackBanner(null);
     setCompletedState(null);
     setAttemptCount(0);
+    setNudgesRemaining(huntInfo.maxNudges ?? 2);
     setUnlockedHint(null);
     setScreen("welcome");
   };
@@ -495,8 +629,9 @@ export function ScavengerHuntApp() {
                 color: "var(--ink-muted)"
               }}
             >
-              Each photo is checked live and discarded after verification—nothing
-              is posted publicly.
+              Solve all {huntInfo.totalStops} clues without using a nudge to
+              earn a No-Hint Sleuth stamp—plus a downloadable keepsake strip at
+              the end.
             </p>
           </form>
         </section>
@@ -541,13 +676,54 @@ export function ScavengerHuntApp() {
               {currentStop.chapterTitle}: {currentStop.locationLabel}
             </h1>
             <p className="riddle-narrative">{currentStop.narrative}</p>
+
+            {currentStop.clueImage ? (
+              <figure className="clue-image-frame">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={currentStop.clueImage}
+                  alt={
+                    currentStop.clueImageCaption ??
+                    "Visual detail clue for this stop"
+                  }
+                />
+                {currentStop.clueImageCaption ? (
+                  <figcaption className="clue-image-caption">
+                    {currentStop.clueImageCaption}
+                  </figcaption>
+                ) : null}
+              </figure>
+            ) : null}
+
             <blockquote className="riddle-verse">
               &ldquo;{currentStop.riddle}&rdquo;
             </blockquote>
 
+            {currentStop.actionPrompt ? (
+              <div className="action-twist-box">
+                <strong>Photo twist:</strong> {currentStop.actionPrompt}
+              </div>
+            ) : null}
+
             {unlockedHint ? (
               <div className="hint-box">
                 <strong>Field note:</strong> {unlockedHint}
+              </div>
+            ) : !verifiedHold ? (
+              <div className="nudge-row">
+                <span
+                  style={{ fontSize: "0.83rem", color: "var(--ink-muted)" }}
+                >
+                  Stuck? Unlock a direct clue (costs your No-Hint Sleuth stamp).
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={handleUseNudge}
+                  disabled={nudgesRemaining <= 0 || Boolean(busyMessage)}
+                >
+                  Use a nudge ({nudgesRemaining} left)
+                </button>
               </div>
             ) : null}
           </article>
@@ -661,6 +837,13 @@ export function ScavengerHuntApp() {
               >
                 {verifiedHold.successNote}
               </p>
+
+              {verifiedHold.propRevealNote ? (
+                <div className="prop-reveal-box">
+                  <strong>Hidden lead:</strong> {verifiedHold.propRevealNote}
+                </div>
+              ) : null}
+
               <div style={{ marginTop: 14 }}>
                 <button
                   type="button"
@@ -710,16 +893,30 @@ export function ScavengerHuntApp() {
                   {completedState.finisher.playerName}
                 </strong>
               </div>
-              {completedState.finisher.isPrizeWinner ? (
-                <span className="status-pill" data-tone="accent">
-                  Goody Bag Winner #{completedState.finisher.rank} of{" "}
-                  {huntInfo.maxWinners}
-                </span>
-              ) : (
-                <span className="status-pill">
-                  Finisher #{completedState.finisher.rank}
-                </span>
-              )}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  flexWrap: "wrap",
+                  alignItems: "center"
+                }}
+              >
+                {completedState.finisher.pureSleuth ? (
+                  <span className="status-pill" data-tone="success">
+                    No-Hint Sleuth
+                  </span>
+                ) : null}
+                {completedState.finisher.isPrizeWinner ? (
+                  <span className="status-pill" data-tone="accent">
+                    Goody Bag Winner #{completedState.finisher.rank} of{" "}
+                    {huntInfo.maxWinners}
+                  </span>
+                ) : (
+                  <span className="status-pill">
+                    Finisher #{completedState.finisher.rank}
+                  </span>
+                )}
+              </div>
             </div>
 
             {completedState.finisher.isPrizeWinner &&
@@ -757,7 +954,7 @@ export function ScavengerHuntApp() {
               <p style={{ margin: 0, fontSize: "0.95rem" }}>
                 All {huntInfo.maxWinners} goody bags have already been claimed
                 for this round, though you completed every stop on the trail!
-                Keep a screenshot of this pass as a memory from{" "}
+                Download your photo strip below as a keepsake from{" "}
                 {huntInfo.venueName}.
               </p>
             )}
@@ -780,6 +977,47 @@ export function ScavengerHuntApp() {
               </div>
             </div>
           </div>
+
+          {keepsakeShots.length > 0 ? (
+            <section className="keepsake-panel">
+              <h2 className="section-heading" style={{ fontSize: "1.35rem" }}>
+                Your Trail Keepsake Strip
+              </h2>
+              <p
+                style={{
+                  margin: "0 0 8px",
+                  fontSize: "0.9rem",
+                  color: "var(--ink-muted)"
+                }}
+              >
+                All {keepsakeShots.length} verified stops compiled on your phone
+                —save a copy before leaving the courtyard.
+              </p>
+
+              <div className="keepsake-grid">
+                {keepsakeShots.map((shot) => (
+                  <div key={shot.stopId} className="keepsake-thumb">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={shot.dataUrl} alt={shot.locationLabel} />
+                    <div className="keepsake-thumb-label">
+                      {shot.chapterTitle}: {shot.locationLabel}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleDownloadKeepsakeStrip}
+                disabled={stripBusy}
+              >
+                {stripBusy
+                  ? "Composing PNG strip..."
+                  : "Download Keepsake Photo Strip"}
+              </button>
+            </section>
+          ) : null}
         </section>
       ) : null}
 

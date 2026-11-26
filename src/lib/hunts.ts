@@ -46,7 +46,7 @@ export function listHuntSummaries(): PublicHuntPackSummary[] {
 }
 
 /**
- * Strips all server-only verification criteria and reference image lists
+ * Strips all server-only verification criteria, hints, and post-solve reveals
  * before sending any stop to the browser.
  */
 export function getPublicStop(
@@ -62,7 +62,13 @@ export function getPublicStop(
     id: stop.id,
     chapterTitle: stop.chapterTitle,
     locationLabel: stop.locationLabel,
+    challengeType: stop.challengeType ?? "riddle",
     narrative: stop.narrative,
-    riddle: stop.riddle
+    riddle: stop.riddle,
+    ...(stop.clueImage ? { clueImage: stop.clueImage } : {}),
+    ...(stop.clueImageCaption
+      ? { clueImageCaption: stop.clueImageCaption }
+      : {}),
+    ...(stop.actionPrompt ? { actionPrompt: stop.actionPrompt } : {})
   };
 }

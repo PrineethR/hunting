@@ -54,7 +54,8 @@ export async function POST(request: Request) {
           claimPrefix: hunt.claimPrefix,
           startedAt: token.startedAt,
           finishedAt: token.finishedAt ?? new Date().toISOString(),
-          maxWinners: hunt.maxWinners
+          maxWinners: hunt.maxWinners,
+          nudgesUsed: token.nudgesUsed ?? 0
         }));
 
       const refreshedSnapshot = await getLeaderboardState(
@@ -87,6 +88,10 @@ export async function POST(request: Request) {
 
     const attempts = await getSessionAttempts(hunt.id, token.sessionId);
     const fullStop = hunt.stops[token.currentStopIndex];
+    const nudgesUsed = token.nudgesUsed ?? 0;
+    const hintUnlockedByNudge =
+      Array.isArray(token.unlockedHintStopIds) &&
+      token.unlockedHintStopIds.includes(fullStop.id);
 
     return NextResponse.json({
       status: "active",
@@ -96,7 +101,10 @@ export async function POST(request: Request) {
       startedAt: token.startedAt,
       currentStop,
       attemptNumber: attempts,
-      unlockedHint: attempts >= 2 ? fullStop.nudgeHint : null,
+      nudgesUsed,
+      nudgesRemaining: Math.max(0, hunt.maxNudges - nudgesUsed),
+      unlockedHint:
+        attempts >= 2 || hintUnlockedByNudge ? fullStop.nudgeHint : null,
       prizesRemaining: snapshot.prizesRemaining,
       maxWinners: hunt.maxWinners
     });

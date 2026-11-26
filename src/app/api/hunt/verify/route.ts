@@ -136,6 +136,10 @@ export async function POST(request: Request) {
     const nextIndex = token.currentStopIndex + 1;
     const completedStopIds = [...token.completedStopIds, expectedStop.id];
     const isFinalStop = nextIndex >= hunt.stops.length;
+    const nudgesUsed = token.nudgesUsed ?? 0;
+    const unlockedHintStopIds = Array.isArray(token.unlockedHintStopIds)
+      ? token.unlockedHintStopIds
+      : [];
 
     if (!isFinalStop) {
       await registerOrUpdateSession({
@@ -154,6 +158,8 @@ export async function POST(request: Request) {
         huntId: hunt.id,
         currentStopIndex: nextIndex,
         completedStopIds,
+        nudgesUsed,
+        unlockedHintStopIds,
         startedAt: token.startedAt
       });
 
@@ -167,6 +173,7 @@ export async function POST(request: Request) {
         observed: verdict.observed,
         confidence: verdict.confidence,
         successNote: expectedStop.successNote,
+        propRevealNote: expectedStop.propRevealNote ?? null,
         progressToken: updatedToken,
         nextStop,
         prizesRemaining: snapshot.prizesRemaining,
@@ -183,7 +190,8 @@ export async function POST(request: Request) {
       claimPrefix: hunt.claimPrefix,
       startedAt: token.startedAt,
       finishedAt,
-      maxWinners: hunt.maxWinners
+      maxWinners: hunt.maxWinners,
+      nudgesUsed
     });
 
     await registerOrUpdateSession({
@@ -202,6 +210,8 @@ export async function POST(request: Request) {
       huntId: hunt.id,
       currentStopIndex: nextIndex,
       completedStopIds,
+      nudgesUsed,
+      unlockedHintStopIds,
       startedAt: token.startedAt,
       finishedAt
     });
@@ -215,6 +225,7 @@ export async function POST(request: Request) {
       observed: verdict.observed,
       confidence: verdict.confidence,
       successNote: expectedStop.successNote,
+      propRevealNote: expectedStop.propRevealNote ?? null,
       progressToken: completedToken,
       finisher,
       finaleTitle: hunt.finaleTitle,

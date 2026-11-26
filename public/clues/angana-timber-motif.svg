@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Close-up carved timber column motif against Bangalore red-oxide terracotta wall">
+  <defs>
+    <linearGradient id="oxide" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9e422c" />
+      <stop offset="100%" stop-color="#7c3120" />
+    </linearGradient>
+    <linearGradient id="teak" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5d3b27" />
+      <stop offset="50%" stop-color="#6e472f" />
+      <stop offset="100%" stop-color="#482c1c" />
+    </linearGradient>
+  </defs>
+  <!-- Red-oxide courtyard background -->
+  <rect width="640" height="360" fill="url(#oxide)" />
+  <!-- Subtle mortar joint lines -->
+  <g stroke="#c67b62" stroke-width="1" opacity="0.28">
+    <line x1="0" y1="90" x2="640" y2="90" />
+    <line x1="0" y1="180" x2="640" y2="180" />
+    <line x1="0" y1="270" x2="640" y2="270" />
+  </g>
+  <!-- Carved timber column section -->
+  <rect x="176" y="0" width="288" height="360" fill="url(#teak)" />
+  <rect x="196" y="0" width="248" height="360" fill="none" stroke="#c2986e" stroke-width="1.5" opacity="0.55" />
+  <!-- Traditional carved lotus medallion -->
+  <g transform="translate(320 180)">
+    <circle r="102" fill="#3c2315" stroke="#c2986e" stroke-width="2" />
+    <circle r="76" fill="none" stroke="#c2986e" stroke-width="1.5" stroke-dasharray="6 5" />
+    <g fill="#7c5236" stroke="#d5af88" stroke-width="1.4">
+      <ellipse cx="0" cy="-50" rx="14" ry="30" />
+      <ellipse cx="0" cy="50" rx="14" ry="30" />
+      <ellipse cx="-50" cy="0" rx="30" ry="14" />
+      <ellipse cx="50" cy="0" rx="30" ry="14" />
+      <ellipse cx="-35" cy="-35" rx="14" ry="26" transform="rotate(-45 -35 -35)" />
+      <ellipse cx="35" cy="-35" rx="14" ry="26" transform="rotate(45 35 -35)" />
+      <ellipse cx="-35" cy="35" rx="14" ry="26" transform="rotate(45 -35 35)" />
+      <ellipse cx="35" cy="35" rx="14" ry="26" transform="rotate(-45 35 35)" />
+    </g>
+    <circle r="22" fill="#b05136" stroke="#e4c39f" stroke-width="1.8" />
+  </g>
+</svg>
