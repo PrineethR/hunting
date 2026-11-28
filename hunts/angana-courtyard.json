@@ -4,13 +4,13 @@
   "subtitle": "A wedding story woven through stone, timber, and open sky",
   "venueName": "Angana The Courtyard",
   "city": "Bangalore",
-  "welcomeCopy": "Seven quiet corners across Angana The Courtyard hold pieces of our story—mixing riddles, visual clues, and playful photo twists. The first five guests or pairs to bring their finished pass to the gift table claim a keepsake goody bag, and everyone unlocks a downloadable trail photo strip.",
-  "hostPersona": "You are a witty, affectionate Bangalore wedding chronicler guiding guests through Angana The Courtyard. Notice festive outfits, courtyard light, and shared smiles in the photo; celebrate matches warmly and drop playful, spoiler-free nudges when someone is close.",
+  "welcomeCopy": "Seven quiet corners across Angana hold pieces of Prineeth & Pramoddini's story. The first five guests to reach the finish line with this pass claim a keepsake goody bag.",
+  "hostPersona": "You are a witty, affectionate Bangalore wedding chronicler celebrating Prineeth & Pramoddini at Angana The Courtyard. Notice festive outfits, courtyard light, and shared smiles in the photo; celebrate matches warmly and drop playful, spoiler-free nudges when someone is close.",
   "maxNudges": 2,
   "maxWinners": 5,
   "finaleTitle": "Under the Courtyard Sky",
-  "finaleStory": "You have walked the length of Angana—past warm red-oxide stone, quiet water, carved timber columns, and open Bangalore sky. Thank you for celebrating this chapter with us and seeing this courtyard through unhurried eyes.",
-  "prizeInstructions": "Bring this stamped Finisher Pass to the gift table near the entrance archway—the first five finishers to arrive claim one of our five physical goody bags!",
+  "finaleStory": "You have walked the length of Angana—past warm red-oxide stone, quiet water, carved timber columns, and open Bangalore sky. Thank you for celebrating this chapter with Prineeth & Pramoddini.",
+  "prizeInstructions": "Bring this pass to the gift table near the entrance archway—the first five finishers to arrive claim one of the five physical goody bags.",
   "stops": [
     {
       "id": "courtyard-welcome",
@@ -21,6 +21,10 @@
       "riddle": "Here is where names are greeted and journeys begin beneath an open threshold. Find the welcome board, floral archway, or carved entrance gate that marks our arrival.",
       "nudgeHint": "Head back toward the main courtyard entrance—any welcome sign, floral arch, or entrance doorway counts.",
       "successNote": "You have crossed into the courtyard.",
+      "interlude": {
+        "title": "Where Pramoddini & I first met",
+        "text": "Before all of this—the courtyard, the marigolds, the chaos—our story started in the most unassuming place. Ask us at dinner if you don't already know the true version (spoiler: we still disagree on who spoke first)."
+      },
       "verification": {
         "targetDescription": "A wedding welcome sign, floral archway, decorated entrance gate, or venue entrance sign.",
         "acceptNotes": "Any angle of the entrance arch, welcome easel/board, floral doorway, or Angana entrance.",
@@ -38,6 +42,10 @@
       "nudgeHint": "Find the decorative welcome mirror in the courtyard, catch yourself in the reflection, and hold up 2 fingers.",
       "successNote": "Sharp outfit, clear reflection, and two fingers spotted.",
       "propRevealNote": "Look closely at the bottom-right corner of the mirror you just stood before—follow the carved wood pattern sketched there toward the verandah.",
+      "interlude": {
+        "title": "Something we both utterly dislike",
+        "text": "Early-morning alarms before 7 AM, unsolicited advice on Bangalore traffic routes, and anyone claiming they don't need dessert. If you spot us yawning near the lawn, you know why."
+      },
       "verification": {
         "targetDescription": "A mirror (decorative, welcome, or wall mirror) showing a reflection of the guest holding up 2 fingers / peace sign.",
         "acceptNotes": "Mirror selfies, angled mirror shots, welcome mirrors with lettering where the guest is reflected with 2 fingers raised, even in warm evening lighting.",
@@ -56,6 +64,10 @@
       "clueImageCaption": "Visual clue: spot carved timber set against red-oxide walls along the verandah.",
       "nudgeHint": "Look along the covered verandah walkway for a wooden column, stone pillar, or terracotta/red-oxide wall arch.",
       "successNote": "Warm timber and red earth—a signature of this courtyard.",
+      "interlude": {
+        "title": "One thing we both shamelessly love",
+        "text": "Strong filter coffee at slightly unreasonable hours, long drives with zero destination, and turning quick errands into three-hour food stops."
+      },
       "verification": {
         "targetDescription": "A courtyard pillar, carved wooden column, stone veranda pillar, or terracotta/red-oxide architectural archway.",
         "acceptNotes": "Any structural pillar, carved wood post, or courtyard colonnade detail.",
@@ -71,6 +83,10 @@
       "riddle": "No river flows through me, yet petals drift across my surface beneath the sky. Find where water rests in brass or stone.",
       "nudgeHint": "Look around the central courtyard steps or pathways for a brass urli bowl with floating flowers, a fountain, or a lotus pond.",
       "successNote": "Still water and marigold light—follow the canopy next.",
+      "interlude": {
+        "title": "A debate we will never settle",
+        "text": "Prineeth insists he's always five minutes away; Pramoddini knows that actually means twenty-five. At least today, we both showed up on time."
+      },
       "verification": {
         "targetDescription": "A brass urli bowl with water/petals, courtyard water feature, pond, or decorative fountain.",
         "acceptNotes": "Flower-filled brass bowls, stone basins, lotus water features, or courtyard fountains.",
@@ -87,6 +103,10 @@
       "actionPrompt": "Reach one hand up toward the branches in frame—or capture two courtyard trees framing the open sky.",
       "nudgeHint": "Stand under any courtyard tree or frangipani/bougainvillea canopy and shoot upward through the branches and sky.",
       "successNote": "Open branches and Bangalore sky—two chapters left.",
+      "interlude": {
+        "title": "Our favourite tiny ritual",
+        "text": "Stealing five quiet minutes before any big celebration—no phones, just checking in on each other before diving back into the crowd."
+      },
       "verification": {
         "targetDescription": "Tree canopy, flowering branches, courtyard trees, or lush overhanging foliage seen outdoors against the sky.",
         "acceptNotes": "Upward shots of tree branches against the sky, flowering trees, or sunlit/lit courtyard trees (with or without a reaching hand).",
@@ -102,6 +122,10 @@
       "riddle": "Polished in brass and waking at dusk, I hold a steady golden spark against the evening breeze. Capture my light.",
       "nudgeHint": "Search near the mandap, courtyard steps, or verandah for a traditional brass lamp (deepam/diya), hanging lantern, or warm string light.",
       "successNote": "Warm brass glow captured—one final toast awaits.",
+      "interlude": {
+        "title": "One last thing before the final clue",
+        "text": "Neither of us likes staged poses—which is why your candid photos from today mean more to us than anything else. One final chapter left!"
+      },
       "verification": {
         "targetDescription": "A brass oil lamp (diya/deepam), hanging brass lantern, candle, or warm courtyard evening light.",
         "acceptNotes": "Lit or unlit traditional brass lamps, hanging courtyard lanterns, or warm amber fairy lights.",

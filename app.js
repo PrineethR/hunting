@@ -67,6 +67,9 @@ const els = {
   verifiedSuccessNote: document.getElementById("verified-success-note"),
   propRevealBox: document.getElementById("prop-reveal-box"),
   propRevealText: document.getElementById("prop-reveal-text"),
+  interludeCard: document.getElementById("interlude-card"),
+  interludeTitle: document.getElementById("interlude-title"),
+  interludeText: document.getElementById("interlude-text"),
   nextStopBtn: document.getElementById("next-stop-btn"),
   finaleTitle: document.getElementById("finale-title"),
   finaleStory: document.getElementById("finale-story"),
@@ -276,6 +279,14 @@ function renderActiveStop() {
       els.propRevealBox.classList.remove("hidden");
     } else {
       els.propRevealBox.classList.add("hidden");
+    }
+
+    if (state.verifiedHold.interlude) {
+      els.interludeTitle.textContent = state.verifiedHold.interlude.title;
+      els.interludeText.textContent = state.verifiedHold.interlude.text;
+      els.interludeCard.classList.remove("hidden");
+    } else {
+      els.interludeCard.classList.add("hidden");
     }
 
     const isLast = s.currentStopIndex + 1 >= total;
@@ -617,7 +628,8 @@ els.verifyPhotoBtn.addEventListener("click", async () => {
     state.verifiedHold = {
       feedback: verdict.feedback,
       successNote: stop.successNote,
-      propRevealNote: stop.propRevealNote || null
+      propRevealNote: stop.propRevealNote || null,
+      interlude: stop.interlude || null
     };
     state.checking = false;
     renderActiveStop();

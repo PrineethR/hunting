@@ -121,14 +121,14 @@ export async function renderKeepsakeStripPng(params) {
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas context unavailable");
 
-  ctx.fillStyle = "#faf6ef";
+  ctx.fillStyle = "#FFF2E6";
   ctx.fillRect(0, 0, width, height);
 
-  ctx.strokeStyle = "#ddd3c3";
+  ctx.strokeStyle = "#D4C6B4";
   ctx.lineWidth = 2;
   ctx.strokeRect(20, 20, width - 40, height - 40);
 
-  ctx.fillStyle = "#8a5a44";
+  ctx.fillStyle = "#5F6248";
   ctx.font = "500 16px ui-monospace, SFMono-Regular, Menlo, monospace";
   ctx.fillText(
     `${params.venueName.toUpperCase()} · ${params.city.toUpperCase()}`,
@@ -136,8 +136,8 @@ export async function renderKeepsakeStripPng(params) {
     66
   );
 
-  ctx.fillStyle = "#2b2019";
-  ctx.font = "400 38px Georgia, serif";
+  ctx.fillStyle = "#2B1D16";
+  ctx.font = "400 38px 'EB Garamond', Georgia, serif";
   ctx.fillText(params.title, padX, 108);
 
   const badgeParts = [
@@ -147,11 +147,11 @@ export async function renderKeepsakeStripPng(params) {
   ]
     .filter(Boolean)
     .join("   ·   ");
-  ctx.fillStyle = "#6c5d51";
-  ctx.font = "500 18px -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillStyle = "#5F6248";
+  ctx.font = "500 18px 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif";
   ctx.fillText(badgeParts, padX, 140);
 
-  ctx.strokeStyle = "#ddd3c3";
+  ctx.strokeStyle = "#D4C6B4";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(padX, 154);
@@ -165,9 +165,9 @@ export async function renderKeepsakeStripPng(params) {
     const x = padX + col * (cardW + gap);
     const y = headerH + 14 + row * (cardH + gap);
 
-    ctx.fillStyle = "#fffdf9";
+    ctx.fillStyle = "#FFF9F3";
     ctx.fillRect(x, y, cardW, cardH);
-    ctx.strokeStyle = "#dfd5c6";
+    ctx.strokeStyle = "#D8CBB9";
     ctx.lineWidth = 1.5;
     ctx.strokeRect(x, y, cardW, cardH);
 
@@ -175,20 +175,20 @@ export async function renderKeepsakeStripPng(params) {
       const img = await loadImage(shot.dataUrl);
       drawCoverImage(ctx, img, x + 8, y + 8, cardW - 16, imgH - 12);
     } catch {
-      ctx.fillStyle = "#efe8dc";
+      ctx.fillStyle = "#F3E5D6";
       ctx.fillRect(x + 8, y + 8, cardW - 16, imgH - 12);
     }
 
-    ctx.fillStyle = "#b05136";
+    ctx.fillStyle = "#BC300C";
     ctx.font = "500 13px ui-monospace, SFMono-Regular, Menlo, monospace";
     ctx.fillText(shot.chapterTitle.toUpperCase(), x + 12, y + imgH + 18);
 
-    ctx.fillStyle = "#2b2019";
-    ctx.font = "500 16px Georgia, serif";
+    ctx.fillStyle = "#2B1D16";
+    ctx.font = "500 17px 'EB Garamond', Georgia, serif";
     ctx.fillText(shot.locationLabel, x + 12, y + imgH + 40);
   }
 
-  ctx.fillStyle = "#7a6c5e";
+  ctx.fillStyle = "#5F6248";
   ctx.font = "400 14px ui-monospace, SFMono-Regular, Menlo, monospace";
   ctx.fillText(
     `Trail Keepsake · ${new Date().toLocaleDateString("en-IN", {

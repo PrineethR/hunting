@@ -1,21 +1,21 @@
 :root {
-  --bg: oklch(0.982 0.008 62);
-  --paper: oklch(0.996 0.004 60);
-  --ink: oklch(0.24 0.02 45);
-  --ink-soft: oklch(0.50 0.016 50);
-  --hairline: oklch(0.89 0.012 58);
+  --bg: #FFF2E6;
+  --paper: #FFF9F3;
+  --ink: #2B1D16;
+  --ink-soft: #5F6248;
+  --hairline: rgba(95, 98, 72, 0.22);
 
-  --accent: oklch(0.56 0.135 28);
-  --accent-hover: oklch(0.50 0.14 28);
-  --accent-tint: oklch(0.955 0.022 36);
-  --accent-ink: oklch(0.985 0.004 50);
+  --accent: #BC300C;
+  --accent-hover: #9A2508;
+  --accent-tint: rgba(188, 48, 12, 0.08);
+  --accent-ink: #FFF9F3;
 
-  --sage: oklch(0.49 0.085 148);
-  --sage-tint: oklch(0.945 0.022 148);
-  --gold: oklch(0.72 0.115 78);
+  --sage: #5F6248;
+  --sage-tint: rgba(95, 98, 72, 0.12);
+  --gold: #C78D4E;
 
-  --font-display: "Cormorant Garamond", Georgia, serif;
-  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "EB Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -87,8 +87,8 @@ input:focus-visible {
 .botanical-mark {
   width: 72px;
   height: 46px;
-  color: var(--accent);
-  opacity: 0.78;
+  color: var(--sage);
+  opacity: 0.88;
   margin-bottom: 16px;
 }
 
@@ -106,6 +106,7 @@ input:focus-visible {
 
 .sprig-bud {
   opacity: 0;
+  color: var(--accent);
   transform-origin: 74px 14px;
   animation: popIn 280ms var(--ease-out) 420ms forwards;
 }
@@ -593,6 +594,33 @@ input:focus-visible {
   background: var(--sage-tint);
   font-size: 0.88rem;
   color: var(--ink);
+}
+
+.interlude-note {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  text-align: left;
+  animation: screenIn 260ms var(--ease-out);
+}
+
+.interlude-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin: 0 0 4px;
+}
+
+.interlude-body {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.56;
+  color: var(--ink);
+  text-wrap: pretty;
 }
 
 /* Finale & keepsake strip */
