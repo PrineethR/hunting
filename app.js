@@ -5,31 +5,23 @@ import {
 } from "./keepsake.js";
 
 const KEY_STORAGE = "angana_gemini_key_v1";
-const SESSION_PREFIX = "angana_static_session_v1:";
-const PHOTOS_PREFIX = "angana_static_photos_v1:";
+const SESSION_KEY = "angana_courtyard_session_v1";
+const PHOTOS_KEY = "angana_courtyard_photos_v1";
+const HUNT_PATH = "./hunts/angana-courtyard.json";
 const MODEL_NAME = "gemini-2.5-flash";
-
-const PACKS = [
-  { id: "home-test", label: "Home Rehearsal Trail", stopsCount: 6 },
-  { id: "angana-courtyard", label: "Courtyard Trails at Angana", stopsCount: 7 }
-];
 
 const state = {
   hunt: null,
-  huntId: "home-test",
   apiKey: "",
   session: null,
   photo: null,
   verifiedHold: null,
-  feedback: null,
+  feedbackText: null,
   shots: [],
-  busyText: null
+  checking: false
 };
 
 const els = {
-  venueBrand: document.getElementById("venue-brand"),
-  resetBtn: document.getElementById("reset-run-btn"),
-  packSwitcher: document.getElementById("pack-switcher"),
   globalAlert: document.getElementById("global-alert"),
   globalAlertText: document.getElementById("global-alert-text"),
   screenLoading: document.getElementById("screen-loading"),
@@ -38,18 +30,14 @@ const els = {
   screenCompleted: document.getElementById("screen-completed"),
   welcomeTitle: document.getElementById("welcome-title"),
   welcomeCopy: document.getElementById("welcome-copy"),
-  ledgerStops: document.getElementById("ledger-stops"),
-  ledgerGifts: document.getElementById("ledger-gifts"),
   keySetupBox: document.getElementById("key-setup-box"),
-  keySavedRow: document.getElementById("key-saved-row"),
   apiKeyInput: document.getElementById("api-key-input"),
-  clearKeyBtn: document.getElementById("clear-key-btn"),
   startForm: document.getElementById("start-form"),
   playerNameInput: document.getElementById("player-name-input"),
   startSubmitBtn: document.getElementById("start-submit-btn"),
+  stepDots: document.getElementById("step-dots"),
   stopCounter: document.getElementById("stop-counter"),
-  giftsBadge: document.getElementById("gifts-badge"),
-  progressFill: document.getElementById("progress-fill"),
+  resetBtn: document.getElementById("reset-run-btn"),
   stopHeading: document.getElementById("stop-heading"),
   stopNarrative: document.getElementById("stop-narrative"),
   clueImageWrap: document.getElementById("clue-image-wrap"),
@@ -58,22 +46,21 @@ const els = {
   stopRiddle: document.getElementById("stop-riddle"),
   actionTwistBox: document.getElementById("action-twist-box"),
   actionTwistText: document.getElementById("action-twist-text"),
-  hintBox: document.getElementById("hint-box"),
-  hintText: document.getElementById("hint-text"),
-  nudgeRow: document.getElementById("nudge-row"),
   nudgeBtn: document.getElementById("nudge-btn"),
+  hintCollapse: document.getElementById("hint-collapse"),
+  hintText: document.getElementById("hint-text"),
   captureControls: document.getElementById("capture-controls"),
   cameraInput: document.getElementById("camera-input"),
   libraryInput: document.getElementById("library-input"),
   takePhotoBtn: document.getElementById("take-photo-btn"),
   libraryPhotoBtn: document.getElementById("library-photo-btn"),
   previewCard: document.getElementById("preview-card"),
+  polaroidFrame: document.getElementById("polaroid-frame"),
   previewImg: document.getElementById("preview-img"),
-  previewMeta: document.getElementById("preview-meta"),
+  checkingVeil: document.getElementById("checking-veil"),
   clearPhotoBtn: document.getElementById("clear-photo-btn"),
   verifyPhotoBtn: document.getElementById("verify-photo-btn"),
   feedbackBanner: document.getElementById("feedback-banner"),
-  feedbackTitle: document.getElementById("feedback-title"),
   feedbackText: document.getElementById("feedback-text"),
   verifiedBanner: document.getElementById("verified-banner"),
   verifiedFeedback: document.getElementById("verified-feedback"),
@@ -83,20 +70,15 @@ const els = {
   nextStopBtn: document.getElementById("next-stop-btn"),
   finaleTitle: document.getElementById("finale-title"),
   finaleStory: document.getElementById("finale-story"),
-  finalFeedbackBanner: document.getElementById("final-feedback-banner"),
-  finalFeedbackText: document.getElementById("final-feedback-text"),
   finisherName: document.getElementById("finisher-name"),
   sleuthBadge: document.getElementById("sleuth-badge"),
-  winnerBadge: document.getElementById("winner-badge"),
   prizeInstructions: document.getElementById("prize-instructions"),
   elapsedTime: document.getElementById("elapsed-time"),
   completedAt: document.getElementById("completed-at"),
   keepsakePanel: document.getElementById("keepsake-panel"),
-  keepsakeSummary: document.getElementById("keepsake-summary"),
   keepsakeGrid: document.getElementById("keepsake-grid"),
   downloadStripBtn: document.getElementById("download-strip-btn"),
-  footerVenue: document.getElementById("footer-venue"),
-  footerEdition: document.getElementById("footer-edition")
+  playAgainBtn: document.getElementById("play-again-btn")
 };
 
 function showGlobalError(msg) {
@@ -113,10 +95,6 @@ function showScreen(name) {
   els.screenWelcome.classList.toggle("hidden", name !== "welcome");
   els.screenActive.classList.toggle("hidden", name !== "active");
   els.screenCompleted.classList.toggle("hidden", name !== "completed");
-  els.resetBtn.classList.toggle(
-    "hidden",
-    name !== "active" && name !== "completed"
-  );
 }
 
 function captureApiKeyFromUrl() {
@@ -159,25 +137,22 @@ function captureApiKeyFromUrl() {
 }
 
 function saveSession() {
-  if (!state.hunt || !state.session) return;
-  window.localStorage.setItem(
-    `${SESSION_PREFIX}${state.hunt.id}`,
-    JSON.stringify(state.session)
-  );
+  if (!state.session) return;
+  window.localStorage.setItem(SESSION_KEY, JSON.stringify(state.session));
 }
 
-function loadSession(huntId) {
+function loadSession() {
   try {
-    const raw = window.localStorage.getItem(`${SESSION_PREFIX}${huntId}`);
+    const raw = window.localStorage.getItem(SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
-function loadShots(huntId) {
+function loadShots() {
   try {
-    const raw = window.localStorage.getItem(`${PHOTOS_PREFIX}${huntId}`);
+    const raw = window.localStorage.getItem(PHOTOS_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
@@ -185,9 +160,9 @@ function loadShots(huntId) {
   }
 }
 
-function saveShots(huntId, shots) {
+function saveShots(shots) {
   try {
-    window.localStorage.setItem(`${PHOTOS_PREFIX}${huntId}`, JSON.stringify(shots));
+    window.localStorage.setItem(PHOTOS_KEY, JSON.stringify(shots));
   } catch {
     // Ignore storage quota errors
   }
@@ -211,40 +186,32 @@ function formatClock(iso) {
   }
 }
 
-function renderPackSwitcher() {
-  els.packSwitcher.innerHTML = "";
-  for (const pack of PACKS) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "pack-tab";
-    btn.dataset.active = String(pack.id === state.huntId);
-    btn.innerHTML = `${pack.label} <span class="mono-num">(${pack.stopsCount} stops)</span>`;
-    btn.addEventListener("click", () => {
-      if (pack.id !== state.huntId) {
-        void initHunt(pack.id);
-      }
-    });
-    els.packSwitcher.appendChild(btn);
-  }
-}
-
-function renderKeyStatus() {
-  const hasKey = Boolean(state.apiKey);
-  els.keySetupBox.classList.toggle("hidden", hasKey);
-  els.keySavedRow.classList.toggle("hidden", !hasKey);
-  els.apiKeyInput.required = !hasKey;
-}
-
 function renderWelcome() {
   const h = state.hunt;
   els.welcomeTitle.textContent = h.title;
   els.welcomeCopy.textContent = h.welcomeCopy;
-  els.ledgerStops.textContent = `${String(h.stops.length).padStart(2, "0")} chapters`;
-  els.ledgerGifts.textContent = `First ${h.maxWinners} finishers`;
-  els.startSubmitBtn.textContent = state.busyText || "Begin the hunt";
-  els.startSubmitBtn.disabled = Boolean(state.busyText);
-  renderKeyStatus();
+
+  const needsKey = !state.apiKey;
+  els.keySetupBox.classList.toggle("hidden", !needsKey);
+  els.apiKeyInput.required = needsKey;
+
   showScreen("welcome");
+}
+
+function renderStepDots(total, currentIndex) {
+  els.stepDots.innerHTML = "";
+  for (let i = 0; i < total; i += 1) {
+    const dot = document.createElement("span");
+    dot.className = "step-dot";
+    if (i < currentIndex || (i === currentIndex && state.verifiedHold)) {
+      dot.dataset.state = "done";
+    } else if (i === currentIndex) {
+      dot.dataset.state = "current";
+    } else {
+      dot.dataset.state = "upcoming";
+    }
+    els.stepDots.appendChild(dot);
+  }
 }
 
 function renderActiveStop() {
@@ -253,21 +220,16 @@ function renderActiveStop() {
   const stop = h.stops[s.currentStopIndex];
   const total = h.stops.length;
 
-  els.stopCounter.textContent = `Stop ${String(s.currentStopIndex + 1).padStart(2, "0")} / ${String(total).padStart(2, "0")} · ${s.playerName}`;
-  els.giftsBadge.textContent = `First ${h.maxWinners} win bags`;
+  renderStepDots(total, s.currentStopIndex);
+  els.stopCounter.textContent = `${s.currentStopIndex + 1} / ${total}`;
 
-  const pct = Math.round(
-    ((s.currentStopIndex + (state.verifiedHold ? 1 : 0)) / total) * 100
-  );
-  els.progressFill.style.width = `${Math.max(8, pct)}%`;
-
-  els.stopHeading.textContent = `${stop.chapterTitle}: ${stop.locationLabel}`;
+  els.stopHeading.textContent = stop.locationLabel;
   els.stopNarrative.textContent = stop.narrative;
   els.stopRiddle.textContent = `“${stop.riddle}”`;
 
   if (stop.clueImage) {
     els.clueImage.src = stop.clueImage;
-    els.clueImage.alt = stop.clueImageCaption || "Visual detail clue";
+    els.clueImage.alt = stop.clueImageCaption || "Visual clue";
     els.clueImageCaption.textContent = stop.clueImageCaption || "";
     els.clueImageCaption.classList.toggle("hidden", !stop.clueImageCaption);
     els.clueImageWrap.classList.remove("hidden");
@@ -287,24 +249,27 @@ function renderActiveStop() {
     (s.attemptsOnCurrentStop || 0) >= 2;
   const nudgesRemaining = Math.max(0, h.maxNudges - (s.nudgesUsed || 0));
 
-  if (hintUnlocked) {
-    els.hintText.textContent = stop.nudgeHint;
-    els.hintBox.classList.remove("hidden");
-    els.nudgeRow.classList.add("hidden");
-  } else {
-    els.hintBox.classList.add("hidden");
-    els.nudgeRow.classList.toggle("hidden", Boolean(state.verifiedHold));
-    els.nudgeBtn.textContent = `Use a nudge (${nudgesRemaining} left)`;
-    els.nudgeBtn.disabled = nudgesRemaining <= 0 || Boolean(state.busyText);
-  }
+  els.hintText.textContent = stop.nudgeHint;
+  els.hintCollapse.classList.toggle("is-open", hintUnlocked);
+  els.hintCollapse.setAttribute("aria-hidden", String(!hintUnlocked));
+  els.nudgeBtn.classList.toggle(
+    "hidden",
+    hintUnlocked || Boolean(state.verifiedHold) || nudgesRemaining <= 0
+  );
 
   if (state.verifiedHold) {
     els.captureControls.classList.add("hidden");
     els.previewCard.classList.add("hidden");
-    els.feedbackBanner.classList.add("hidden");
     els.verifiedBanner.classList.remove("hidden");
     els.verifiedFeedback.textContent = state.verifiedHold.feedback;
     els.verifiedSuccessNote.textContent = state.verifiedHold.successNote;
+
+    const burst = els.verifiedBanner.querySelector(".petal-burst");
+    if (burst) {
+      burst.classList.remove("is-bursting");
+      void burst.offsetWidth;
+      burst.classList.add("is-bursting");
+    }
 
     if (state.verifiedHold.propRevealNote) {
       els.propRevealText.textContent = state.verifiedHold.propRevealNote;
@@ -312,38 +277,27 @@ function renderActiveStop() {
     } else {
       els.propRevealBox.classList.add("hidden");
     }
-    const nextStop = h.stops[s.currentStopIndex + 1];
-    els.nextStopBtn.textContent = nextStop
-      ? `Open ${nextStop.chapterTitle}`
-      : "Continue";
+
+    const isLast = s.currentStopIndex + 1 >= total;
+    els.nextStopBtn.textContent = isLast ? "Finish trail" : "Next clue";
   } else {
     els.verifiedBanner.classList.add("hidden");
-    els.captureControls.classList.remove("hidden");
-    els.takePhotoBtn.disabled = Boolean(state.busyText);
-    els.libraryPhotoBtn.disabled = Boolean(state.busyText);
-    els.takePhotoBtn.textContent = state.photo
-      ? "Retake with camera"
-      : "Take photo";
+    els.captureControls.classList.toggle("hidden", Boolean(state.photo));
+    els.takePhotoBtn.disabled = state.checking;
+    els.libraryPhotoBtn.disabled = state.checking;
 
     if (state.photo) {
       els.previewImg.src = state.photo.previewUrl;
-      els.previewMeta.textContent = `${state.photo.width}x${state.photo.height} · ${Math.max(1, Math.round(state.photo.byteLength / 1024))} KB JPEG`;
-      els.clearPhotoBtn.disabled = Boolean(state.busyText);
-      els.verifyPhotoBtn.disabled = Boolean(state.busyText);
-      els.verifyPhotoBtn.textContent =
-        state.busyText || "Submit photo for check";
+      els.checkingVeil.classList.toggle("hidden", !state.checking);
+      els.clearPhotoBtn.disabled = state.checking;
+      els.verifyPhotoBtn.disabled = state.checking;
       els.previewCard.classList.remove("hidden");
     } else {
       els.previewCard.classList.add("hidden");
     }
 
-    if (state.feedback) {
-      els.feedbackBanner.dataset.tone = state.feedback.tone;
-      els.feedbackTitle.textContent =
-        state.feedback.tone === "warn"
-          ? `Not quite yet (attempt ${s.attemptsOnCurrentStop})`
-          : "Could not verify";
-      els.feedbackText.textContent = state.feedback.text;
+    if (state.feedbackText) {
+      els.feedbackText.textContent = state.feedbackText;
       els.feedbackBanner.classList.remove("hidden");
     } else {
       els.feedbackBanner.classList.add("hidden");
@@ -351,6 +305,12 @@ function renderActiveStop() {
   }
 
   showScreen("active");
+}
+
+function triggerWrongWiggle() {
+  els.polaroidFrame.classList.remove("is-wrong");
+  void els.polaroidFrame.offsetWidth;
+  els.polaroidFrame.classList.add("is-wrong");
 }
 
 function renderCompleted() {
@@ -362,7 +322,6 @@ function renderCompleted() {
   els.finaleStory.textContent = h.finaleStory;
   els.finisherName.textContent = s.playerName;
   els.sleuthBadge.classList.toggle("hidden", !pureSleuth);
-  els.winnerBadge.textContent = `First ${h.maxWinners} Claim Bags`;
   els.prizeInstructions.textContent = h.prizeInstructions;
 
   const elapsedMs = Math.max(
@@ -375,20 +334,12 @@ function renderCompleted() {
     s.finishedAt || new Date().toISOString()
   );
 
-  if (s.lastFeedback) {
-    els.finalFeedbackText.textContent = s.lastFeedback;
-    els.finalFeedbackBanner.classList.remove("hidden");
-  } else {
-    els.finalFeedbackBanner.classList.add("hidden");
-  }
-
   if (state.shots.length > 0) {
-    els.keepsakeSummary.textContent = `All ${state.shots.length} verified stops compiled on your phone—save a copy before leaving the courtyard.`;
     els.keepsakeGrid.innerHTML = "";
     for (const shot of state.shots) {
       const card = document.createElement("div");
-      card.className = "keepsake-thumb";
-      card.innerHTML = `<img src="${shot.dataUrl}" alt="${shot.locationLabel}" /><div class="keepsake-thumb-label">${shot.chapterTitle}: ${shot.locationLabel}</div>`;
+      card.className = "keepsake-polaroid";
+      card.innerHTML = `<img src="${shot.dataUrl}" alt="${shot.locationLabel}" /><div class="keepsake-polaroid-label">${shot.locationLabel}</div>`;
       els.keepsakeGrid.appendChild(card);
     }
     els.keepsakePanel.classList.remove("hidden");
@@ -418,7 +369,7 @@ function buildGeminiPrompt(stop, attemptNumber) {
       : null,
     ``,
     `JUDGING RULES:`,
-    `1. Real wedding/home phone photos often have warm evening lighting, motion blur, or unusual angles—be generous when the target object or landmark is genuinely present.`,
+    `1. Real wedding phone photos often have warm evening lighting, motion blur, or unusual angles—be generous when the target object or landmark is genuinely present.`,
     stop.actionPrompt
       ? `2. Check BOTH the target object/spot AND the requested Photo Twist ("${stop.actionPrompt}"). If they clearly found the right object/spot but forgot the action/gesture/composition, set matched=false and give cheerful partial-credit praise without spoiling anything else.`
       : `2. Confirm the target object or spot is clearly visible in their photo.`,
@@ -471,8 +422,7 @@ async function callGeminiVision(stop, photo, attemptNumber) {
 
   const data = await res.json();
   if (!res.ok) {
-    const errMsg = data?.error?.message || `Gemini API returned ${res.status}`;
-    throw new Error(errMsg);
+    throw new Error(data?.error?.message || `API returned ${res.status}`);
   }
 
   const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
@@ -492,32 +442,17 @@ async function callGeminiVision(stop, photo, attemptNumber) {
   };
 }
 
-async function initHunt(requestedHuntId) {
+async function initHunt() {
   showGlobalError(null);
   showScreen("loading");
-  state.photo = null;
-  state.verifiedHold = null;
-  state.feedback = null;
 
   try {
-    const id = requestedHuntId || "home-test";
-    const res = await fetch(`./hunts/${encodeURIComponent(id)}.json`, {
-      cache: "no-store"
-    });
-    if (!res.ok) throw new Error(`Could not load hunt "${id}".`);
+    const res = await fetch(HUNT_PATH, { cache: "no-store" });
+    if (!res.ok) throw new Error("Could not load trail.");
 
     state.hunt = await res.json();
-    state.huntId = state.hunt.id;
-    state.shots = loadShots(state.hunt.id);
-    state.session = loadSession(state.hunt.id);
-
-    els.venueBrand.textContent = state.hunt.venueName;
-    els.footerVenue.textContent = `${state.hunt.venueName}, ${state.hunt.city}`;
-    els.footerEdition.textContent =
-      state.hunt.id === "home-test"
-        ? "Home Rehearsal Pack"
-        : "Courtyard Edition";
-    renderPackSwitcher();
+    state.shots = loadShots();
+    state.session = loadSession();
 
     if (state.session) {
       if (
@@ -537,13 +472,18 @@ async function initHunt(requestedHuntId) {
   }
 }
 
-// Event bindings
-els.clearKeyBtn.addEventListener("click", () => {
-  window.localStorage.removeItem(KEY_STORAGE);
-  state.apiKey = "";
-  renderKeyStatus();
-});
+function resetRun() {
+  window.localStorage.removeItem(SESSION_KEY);
+  window.localStorage.removeItem(PHOTOS_KEY);
+  state.session = null;
+  state.shots = [];
+  state.photo = null;
+  state.verifiedHold = null;
+  state.feedbackText = null;
+  renderWelcome();
+}
 
+// Event bindings
 els.startForm.addEventListener("submit", (e) => {
   e.preventDefault();
   showGlobalError(null);
@@ -551,7 +491,7 @@ els.startForm.addEventListener("submit", (e) => {
   if (!state.apiKey) {
     const entered = els.apiKeyInput.value.trim();
     if (!entered) {
-      showGlobalError("Paste your restricted Gemini API key once to begin.");
+      showGlobalError("Paste your passcode key once to begin.");
       return;
     }
     window.localStorage.setItem(KEY_STORAGE, entered);
@@ -560,7 +500,7 @@ els.startForm.addEventListener("submit", (e) => {
 
   const name = els.playerNameInput.value.trim().replace(/\s+/g, " ").slice(0, 48);
   if (name.length < 2) {
-    showGlobalError("Enter your name or pair name (at least 2 characters).");
+    showGlobalError("Enter your name (at least 2 characters).");
     return;
   }
 
@@ -573,7 +513,7 @@ els.startForm.addEventListener("submit", (e) => {
     unlockedHintStopIds: []
   };
   state.shots = [];
-  window.localStorage.removeItem(`${PHOTOS_PREFIX}${state.hunt.id}`);
+  window.localStorage.removeItem(PHOTOS_KEY);
   saveSession();
   renderActiveStop();
 });
@@ -587,9 +527,7 @@ async function onFileSelected(e) {
   if (!file) return;
 
   showGlobalError(null);
-  state.feedback = null;
-  state.busyText = "Preparing photo...";
-  renderActiveStop();
+  state.feedbackText = null;
 
   try {
     state.photo = await compressImageForUpload(file, 1024, 0.82);
@@ -597,10 +535,8 @@ async function onFileSelected(e) {
     showGlobalError(
       err instanceof Error ? err.message : "Could not read selected image."
     );
-  } finally {
-    state.busyText = null;
-    renderActiveStop();
   }
+  renderActiveStop();
 }
 
 els.cameraInput.addEventListener("change", onFileSelected);
@@ -608,6 +544,7 @@ els.libraryInput.addEventListener("change", onFileSelected);
 
 els.clearPhotoBtn.addEventListener("click", () => {
   state.photo = null;
+  state.feedbackText = null;
   renderActiveStop();
 });
 
@@ -628,8 +565,8 @@ els.verifyPhotoBtn.addEventListener("click", async () => {
   const stop = state.hunt.stops[state.session.currentStopIndex];
   const attemptNumber = (state.session.attemptsOnCurrentStop || 0) + 1;
 
-  state.busyText = "Inspecting your photo...";
-  state.feedback = null;
+  state.checking = true;
+  state.feedbackText = null;
   showGlobalError(null);
   renderActiveStop();
 
@@ -639,16 +576,15 @@ els.verifyPhotoBtn.addEventListener("click", async () => {
     if (!verdict.matched) {
       state.session.attemptsOnCurrentStop = attemptNumber;
       saveSession();
-      state.feedback = {
-        tone: "warn",
-        text:
-          verdict.feedback ||
-          "Close, though not quite the right spot yet. Try another angle."
-      };
+      state.feedbackText =
+        verdict.feedback ||
+        "Not quite that spot yet—try another angle.";
+      state.checking = false;
+      renderActiveStop();
+      triggerWrongWiggle();
       return;
     }
 
-    // Save local thumbnail for keepsake strip
     try {
       const thumbUrl = await createThumbnailDataUrl(state.photo.previewUrl);
       state.shots = [
@@ -660,7 +596,7 @@ els.verifyPhotoBtn.addEventListener("click", async () => {
           dataUrl: thumbUrl
         }
       ];
-      saveShots(state.hunt.id, state.shots);
+      saveShots(state.shots);
     } catch {
       // Non-blocking
     }
@@ -670,9 +606,9 @@ els.verifyPhotoBtn.addEventListener("click", async () => {
       state.session.currentStopIndex = nextIdx;
       state.session.attemptsOnCurrentStop = 0;
       state.session.finishedAt = new Date().toISOString();
-      state.session.lastFeedback = verdict.feedback;
       saveSession();
       state.photo = null;
+      state.checking = false;
       renderCompleted();
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
@@ -683,19 +619,15 @@ els.verifyPhotoBtn.addEventListener("click", async () => {
       successNote: stop.successNote,
       propRevealNote: stop.propRevealNote || null
     };
+    state.checking = false;
+    renderActiveStop();
   } catch (err) {
-    state.feedback = {
-      tone: "error",
-      text:
-        err instanceof Error
-          ? err.message
-          : "Verification failed—check your API key and signal."
-    };
-  } finally {
-    state.busyText = null;
-    if (!state.session.finishedAt) {
-      renderActiveStop();
-    }
+    state.checking = false;
+    state.feedbackText =
+      err instanceof Error
+        ? err.message
+        : "Could not check right now—try again.";
+    renderActiveStop();
   }
 });
 
@@ -705,26 +637,18 @@ els.nextStopBtn.addEventListener("click", () => {
   saveSession();
   state.verifiedHold = null;
   state.photo = null;
-  state.feedback = null;
+  state.feedbackText = null;
   renderActiveStop();
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-els.resetBtn.addEventListener("click", () => {
-  window.localStorage.removeItem(`${SESSION_PREFIX}${state.hunt.id}`);
-  window.localStorage.removeItem(`${PHOTOS_PREFIX}${state.hunt.id}`);
-  state.session = null;
-  state.shots = [];
-  state.photo = null;
-  state.verifiedHold = null;
-  state.feedback = null;
-  renderWelcome();
-});
+els.resetBtn.addEventListener("click", resetRun);
+els.playAgainBtn.addEventListener("click", resetRun);
 
 els.downloadStripBtn.addEventListener("click", async () => {
   if (!state.shots.length) return;
   els.downloadStripBtn.disabled = true;
-  els.downloadStripBtn.textContent = "Composing PNG strip...";
+  els.downloadStripBtn.textContent = "Preparing strip...";
   try {
     const pngUrl = await renderKeepsakeStripPng({
       title: state.hunt.title,
@@ -736,17 +660,16 @@ els.downloadStripBtn.addEventListener("click", async () => {
     });
     const link = document.createElement("a");
     link.href = pngUrl;
-    link.download = `${state.hunt.id}-keepsake.png`;
+    link.download = "courtyard-keepsake.png";
     link.click();
   } catch {
-    showGlobalError("Could not generate keepsake strip image.");
+    showGlobalError("Could not generate keepsake strip.");
   } finally {
     els.downloadStripBtn.disabled = false;
-    els.downloadStripBtn.textContent = "Download Keepsake Photo Strip";
+    els.downloadStripBtn.textContent = "Save photo strip";
   }
 });
 
 // Boot
 captureApiKeyFromUrl();
-const urlHunt = new URLSearchParams(window.location.search).get("hunt");
-void initHunt(urlHunt || "home-test");
+void initHunt();
