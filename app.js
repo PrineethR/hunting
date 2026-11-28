@@ -69,6 +69,7 @@ const els = {
   propRevealText: document.getElementById("prop-reveal-text"),
   interludeCard: document.getElementById("interlude-card"),
   interludeTitle: document.getElementById("interlude-title"),
+  interludeMedia: document.getElementById("interlude-media"),
   interludeText: document.getElementById("interlude-text"),
   nextStopBtn: document.getElementById("next-stop-btn"),
   finaleTitle: document.getElementById("finale-title"),
@@ -282,8 +283,27 @@ function renderActiveStop() {
     }
 
     if (state.verifiedHold.interlude) {
-      els.interludeTitle.textContent = state.verifiedHold.interlude.title;
-      els.interludeText.textContent = state.verifiedHold.interlude.text;
+      const interlude = state.verifiedHold.interlude;
+      els.interludeTitle.textContent = interlude.title;
+      els.interludeText.textContent = interlude.text;
+
+      const imgs = Array.isArray(interlude.images) ? interlude.images : [];
+      els.interludeMedia.innerHTML = "";
+      if (imgs.length > 0) {
+        els.interludeMedia.dataset.count = String(Math.min(2, imgs.length));
+        for (const src of imgs) {
+          const img = document.createElement("img");
+          img.src = src;
+          img.alt = interlude.title || "";
+          img.loading = "eager";
+          els.interludeMedia.appendChild(img);
+        }
+        els.interludeMedia.classList.remove("hidden");
+      } else {
+        delete els.interludeMedia.dataset.count;
+        els.interludeMedia.classList.add("hidden");
+      }
+
       els.interludeCard.classList.remove("hidden");
     } else {
       els.interludeCard.classList.add("hidden");
