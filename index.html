@@ -14,6 +14,34 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <div class="botanical-stage" aria-hidden="true">
+      <img
+        class="edge-botanical edge-top-left"
+        src="./botanicals/leaves-left.png"
+        alt=""
+      />
+      <img
+        class="edge-botanical edge-top-right"
+        src="./botanicals/flower-right.png"
+        alt=""
+      />
+      <img
+        class="edge-botanical edge-bottom-left"
+        src="./botanicals/leaf-broad.png"
+        alt=""
+      />
+      <img
+        class="edge-botanical edge-bottom-petal"
+        src="./botanicals/petal-crimson.png"
+        alt=""
+      />
+      <img
+        class="edge-botanical edge-bottom-right"
+        src="./botanicals/flower-pink.png"
+        alt=""
+      />
+    </div>
+
     <main class="stationery">
       <div id="global-alert" class="whisper-alert hidden" role="alert">
         <p id="global-alert-text"></p>
@@ -26,48 +54,11 @@
       </section>
 
       <section id="screen-welcome" class="screen-center screen-enter hidden">
-        <svg
-          class="botanical-mark"
-          viewBox="0 0 88 56"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            class="sprig-stem"
-            d="M12 44 C 28 38, 44 26, 74 14"
-            stroke="currentColor"
-            stroke-width="1.2"
-            stroke-linecap="round"
-          />
-          <path
-            class="sprig-leaf leaf-1"
-            d="M28 36 C 24 27, 30 20, 38 24 C 36 31, 32 35, 28 36 Z"
-            stroke="currentColor"
-            stroke-width="1.1"
-            stroke-linejoin="round"
-          />
-          <path
-            class="sprig-leaf leaf-2"
-            d="M44 27 C 46 17, 54 14, 58 21 C 53 26, 48 27, 44 27 Z"
-            stroke="currentColor"
-            stroke-width="1.1"
-            stroke-linejoin="round"
-          />
-          <path
-            class="sprig-leaf leaf-3"
-            d="M46 28 C 54 30, 58 38, 50 42 C 45 38, 45 32, 46 28 Z"
-            stroke="currentColor"
-            stroke-width="1.1"
-            stroke-linejoin="round"
-          />
-          <circle
-            class="sprig-bud"
-            cx="74"
-            cy="14"
-            r="2.4"
-            fill="currentColor"
-          />
-        </svg>
+        <div class="floral-crest" aria-hidden="true">
+          <img class="crest-leaf" src="./botanicals/leaf-slender.png" alt="" />
+          <img class="crest-petal" src="./botanicals/petal-blush.png" alt="" />
+          <img class="crest-flower" src="./botanicals/flower-coral.png" alt="" />
+        </div>
 
         <h1 id="welcome-title" class="editorial-title"></h1>
         <p id="welcome-copy" class="editorial-subtitle"></p>
@@ -219,8 +210,12 @@
         <div id="verified-banner" class="verified-moment hidden" role="status">
           <div class="seal-stage">
             <div class="petal-burst" aria-hidden="true">
-              <span></span><span></span><span></span>
-              <span></span><span></span><span></span>
+              <img src="./botanicals/petal-crimson.png" alt="" />
+              <img src="./botanicals/petal-blush.png" alt="" />
+              <img src="./botanicals/flower-dew.png" alt="" />
+              <img src="./botanicals/petal-lilac.png" alt="" />
+              <img src="./botanicals/leaf-slender.png" alt="" />
+              <img src="./botanicals/petal-red.png" alt="" />
             </div>
             <div class="wax-seal" aria-hidden="true">
               <svg
@@ -259,35 +254,11 @@
 
       <section id="screen-completed" class="screen-flow screen-enter hidden">
         <div class="finale-header">
-          <svg
-            class="botanical-mark"
-            viewBox="0 0 88 56"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              class="sprig-stem"
-              d="M12 44 C 28 38, 44 26, 74 14"
-              stroke="currentColor"
-              stroke-width="1.2"
-              stroke-linecap="round"
-            />
-            <path
-              class="sprig-leaf leaf-1"
-              d="M28 36 C 24 27, 30 20, 38 24 C 36 31, 32 35, 28 36 Z"
-              stroke="currentColor"
-              stroke-width="1.1"
-              stroke-linejoin="round"
-            />
-            <path
-              class="sprig-leaf leaf-2"
-              d="M44 27 C 46 17, 54 14, 58 21 C 53 26, 48 27, 44 27 Z"
-              stroke="currentColor"
-              stroke-width="1.1"
-              stroke-linejoin="round"
-            />
-            <circle class="sprig-bud" cx="74" cy="14" r="2.4" fill="currentColor" />
-          </svg>
+          <div class="floral-crest" aria-hidden="true">
+            <img class="crest-leaf" src="./botanicals/leaf-slender.png" alt="" />
+            <img class="crest-petal" src="./botanicals/petal-blush.png" alt="" />
+            <img class="crest-flower" src="./botanicals/flower-coral.png" alt="" />
+          </div>
           <h1 id="finale-title" class="editorial-title"></h1>
           <p id="finale-story" class="editorial-subtitle"></p>
         </div>

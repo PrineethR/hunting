@@ -29,13 +29,118 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: radial-gradient(
+    ellipse at 50% 22%,
+    #FFF7EF 0%,
+    #FFF2E6 56%,
+    #F6E2CE 100%
+  );
+  background-attachment: fixed;
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+/* Handmade cotton-paper grain overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* Pressed edge botanicals */
+.botanical-stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.edge-botanical {
+  position: absolute;
+  height: auto;
+  opacity: 0.72;
+  user-select: none;
+  will-change: transform;
+}
+
+.edge-top-left {
+  top: 14px;
+  left: -8px;
+  width: 108px;
+  animation: swayLeft 9s ease-in-out infinite;
+}
+
+.edge-top-right {
+  top: 22px;
+  right: -6px;
+  width: 96px;
+  animation: swayRight 10s ease-in-out infinite;
+}
+
+.edge-bottom-left {
+  bottom: 12px;
+  left: 10px;
+  width: 58px;
+  transform: rotate(14deg);
+  animation: swayLeft 11s ease-in-out infinite;
+}
+
+.edge-bottom-petal {
+  bottom: 24px;
+  left: 56px;
+  width: 34px;
+  opacity: 0.62;
+  transform: rotate(-18deg);
+}
+
+.edge-bottom-right {
+  bottom: 14px;
+  right: 12px;
+  width: 64px;
+  animation: swayRight 9.5s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .edge-botanical {
+    opacity: 0.44;
+  }
+  .edge-top-left {
+    top: 8px;
+    left: -12px;
+    width: 72px;
+  }
+  .edge-top-right {
+    top: 14px;
+    right: -10px;
+    width: 64px;
+  }
+  .edge-bottom-left {
+    bottom: 6px;
+    left: 2px;
+    width: 44px;
+  }
+  .edge-bottom-petal {
+    bottom: 16px;
+    left: 38px;
+    width: 24px;
+  }
+  .edge-bottom-right {
+    bottom: 8px;
+    right: 4px;
+    width: 46px;
+  }
 }
 
 button,
@@ -55,6 +160,8 @@ input:focus-visible {
 }
 
 .stationery {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
@@ -83,32 +190,41 @@ input:focus-visible {
   animation: screenIn 260ms var(--ease-out);
 }
 
-/* Delicate botanical sprig draw-in */
-.botanical-mark {
-  width: 72px;
-  height: 46px;
-  color: var(--sage);
-  opacity: 0.88;
+/* Painted floral crest on Welcome & Finale */
+.floral-crest {
+  position: relative;
+  width: 96px;
+  height: 58px;
   margin-bottom: 16px;
+  animation: crestBloom 360ms var(--ease-out);
 }
 
-.sprig-stem {
-  stroke-dasharray: 80;
-  stroke-dashoffset: 80;
-  animation: drawLine 650ms var(--ease-out) forwards;
+.floral-crest img {
+  position: absolute;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
 }
 
-.sprig-leaf {
-  stroke-dasharray: 50;
-  stroke-dashoffset: 50;
-  animation: drawLine 520ms var(--ease-out) 180ms forwards;
+.crest-leaf {
+  left: 6px;
+  top: 12px;
+  width: 44px;
+  transform: rotate(-18deg);
 }
 
-.sprig-bud {
-  opacity: 0;
-  color: var(--accent);
-  transform-origin: 74px 14px;
-  animation: popIn 280ms var(--ease-out) 420ms forwards;
+.crest-petal {
+  right: 8px;
+  top: 18px;
+  width: 34px;
+  transform: rotate(22deg);
+  opacity: 0.88;
+}
+
+.crest-flower {
+  left: 24px;
+  top: 2px;
+  width: 48px;
 }
 
 .editorial-title {
@@ -538,39 +654,34 @@ input:focus-visible {
   animation: sealStamp 300ms var(--ease-out);
 }
 
-.petal-burst span {
+.petal-burst img {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
   opacity: 0;
+  pointer-events: none;
 }
 
-.petal-burst.is-bursting span:nth-child(1) {
-  background: var(--accent);
-  animation: petal1 620ms var(--ease-out) forwards;
+.petal-burst.is-bursting img:nth-child(1) {
+  animation: petal1 680ms var(--ease-out) forwards;
 }
-.petal-burst.is-bursting span:nth-child(2) {
-  background: var(--gold);
-  animation: petal2 620ms var(--ease-out) forwards;
+.petal-burst.is-bursting img:nth-child(2) {
+  animation: petal2 680ms var(--ease-out) forwards;
 }
-.petal-burst.is-bursting span:nth-child(3) {
-  background: var(--sage);
-  animation: petal3 620ms var(--ease-out) forwards;
+.petal-burst.is-bursting img:nth-child(3) {
+  animation: petal3 680ms var(--ease-out) forwards;
 }
-.petal-burst.is-bursting span:nth-child(4) {
-  background: var(--accent);
-  animation: petal4 620ms var(--ease-out) forwards;
+.petal-burst.is-bursting img:nth-child(4) {
+  animation: petal4 680ms var(--ease-out) forwards;
 }
-.petal-burst.is-bursting span:nth-child(5) {
-  background: var(--gold);
-  animation: petal5 620ms var(--ease-out) forwards;
+.petal-burst.is-bursting img:nth-child(5) {
+  animation: petal5 680ms var(--ease-out) forwards;
 }
-.petal-burst.is-bursting span:nth-child(6) {
-  background: var(--sage);
-  animation: petal6 620ms var(--ease-out) forwards;
+.petal-burst.is-bursting img:nth-child(6) {
+  animation: petal6 680ms var(--ease-out) forwards;
 }
 
 .verified-reply {
@@ -804,20 +915,34 @@ input:focus-visible {
   }
 }
 
-@keyframes drawLine {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes popIn {
+@keyframes crestBloom {
   from {
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0.92) translateY(4px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes swayLeft {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(1.6deg) translateY(3px);
+  }
+}
+
+@keyframes swayRight {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-1.6deg) translateY(3px);
   }
 }
 
@@ -879,28 +1004,28 @@ input:focus-visible {
 }
 
 @keyframes petal1 {
-  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-34px, -26px) scale(0.4); }
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-42px, -32px) scale(0.65) rotate(-35deg); }
 }
 @keyframes petal2 {
-  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(26px, -28px) scale(0.4); }
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(34px, -34px) scale(0.65) rotate(28deg); }
 }
 @keyframes petal3 {
-  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(36px, 2px) scale(0.4); }
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(44px, 4px) scale(0.65) rotate(42deg); }
 }
 @keyframes petal4 {
-  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(24px, 26px) scale(0.4); }
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(32px, 30px) scale(0.65) rotate(-25deg); }
 }
 @keyframes petal5 {
-  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-28px, 24px) scale(0.4); }
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-34px, 28px) scale(0.65) rotate(32deg); }
 }
 @keyframes petal6 {
-  0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-36px, -2px) scale(0.4); }
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.8) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-44px, 0px) scale(0.65) rotate(-40deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -910,12 +1035,5 @@ input:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-  .sprig-stem,
-  .sprig-leaf {
-    stroke-dashoffset: 0;
-  }
-  .sprig-bud {
-    opacity: 1;
   }
 }
